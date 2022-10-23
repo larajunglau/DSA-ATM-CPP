@@ -102,6 +102,7 @@ char ch;
         pin[index++]=ch;
     }
     pin[index]='\0';    //kapag pag 7th digit na
+
 }
 
 /*void ATM:: encrypt(){
