@@ -5,11 +5,11 @@
 
 using namespace std;
 
-/*typedef struct allAcc{
+typedef struct allAcc{
     string name;
     int accNum, balance;
     struct allAcc *nxt;
-}ALLACC;*/
+}ALLACC;
 
 typedef struct regInfo{
     string name, birthday, number;
@@ -22,27 +22,32 @@ private:
     char pin[7];
     float amount, balance;
     int accNum;
+    ALLACC *head, *n;
 
 public:
-    //ALLACC *head;
     void registration();
     void pincode();
     void saveRegistration();
     void encrypt();
     void savePincode();
     void addAccount();
+    void makeNull();
+    void saveAllAccounts();
 
 
 };
 
+//int head=NULL;
 int main()
 {
     ATM atm;
-    //atm.head=NULL;
+    atm.makeNull();
     atm.registration();
     atm.saveRegistration();
     atm.encrypt();
     atm.savePincode();
+    atm.addAccount();
+    atm.saveAllAccounts();
 }
 
 void ATM:: registration(){
@@ -63,6 +68,7 @@ string initialPin;
     cout <<"\nEnter your Cellphone number: ";
     cin >>regInfo.number;
 
+    initialPin= " ";                    //pang-reset ng value ng initialPin
     while(initialPin!=pin){             //hanggat hindi nag-match, ulit sa ask pincode.
         system("cls");
         cout <<"\nEnter your PIN: ";
@@ -138,26 +144,31 @@ pinFP.open("pincode.txt", ios::out);   //out kapag magpi-print sa file
 
 }
 
-/*void ATM:: addAccount(){    //sine-save yung new account sa linkedlist
-ALLACC *n, *p;
+void ATM:: saveAllAccounts(){
+fstream allAccFP;
+allAccFP.open("allAccounts.txt", ios::out);   //out kapag magpi-print sa file
 
-    n= new ALLACC;      //allocate memory kay n
-    n=head;
-    n->accNum=accNum; n->name=regInfo.name; n->balance=balance;
+    allAccFP <<n->accNum <<"\n" <<n->name <<"\n" <<n->balance <<"\n";
+    allAccFP.close();
+}
+
+void ATM:: addAccount(){    //sine-save yung new account sa linkedlist
+
+    n=head; //set lahat sa head
+    n= new ALLACC; //allocates memory to n
+    n->name=regInfo.name; n->accNum=accNum; n->balance=balance;
     n->nxt=NULL;
 
-    if(head==NULL){     //kapag wala pang laman linked list
+    if(head==NULL){         //
         head=n;
     }
 
-    else{               //kapag may laman na linked list
-        n->nxt= head;
+    else{
+        n->nxt=head;
         head=n;
     }
 
-    cout <<n->name;
-
-}*/
+}
 
 void ATM:: encrypt(){
 
@@ -167,4 +178,8 @@ int i=0;
     pin[i]=pin[i] + 123;       //add code each character
     i++;
     }
+}
+
+void ATM::makeNull(){
+    head==NULL;
 }
