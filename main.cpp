@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <conio.h>
+#include <time.h>
 
 using namespace std;
 
@@ -14,10 +15,15 @@ private:
     REGINFO regInfo;
     char pin[7];
     float amount, balance;
+    int accNum;
+
 
 public:
     void registration();
     void pincode();
+    void saveRegistration();
+    void encrypt();
+    void savePincode();
 
 };
 
@@ -25,11 +31,12 @@ int main()
 {
     ATM atm;
     atm.registration();
+    atm.saveRegistration();
+    atm.savePincode();
+    atm.encrypt();
 }
 
 void ATM:: registration(){
-fstream regFP;
-regFP.open("registration.txt", ios::out);   //out kapag magpi-print sa file
 string initialPin;
 
     //*Lagay statement of agreement
@@ -46,13 +53,6 @@ string initialPin;
     getline(cin, regInfo.birthday);
     cout <<"\nEnter your Cellphone number: ";
     cin >>regInfo.number;
-
-    regFP <<regInfo.name <<"\n";        //Save registration info sa registration.txt
-    regFP <<regInfo.age <<"\n";
-    regFP <<regInfo.birthday <<"\n";
-    regFP <<regInfo.number <<"\n";
-    regFP.close();
-
 
     while(initialPin!=pin){             //hanggat hindi nag-match, ulit sa ask pincode.
         system("cls");
@@ -72,9 +72,13 @@ string initialPin;
     }
 
     balance= amount;
-
-
-
+    srand(time(NULL));
+    accNum= rand() %99999999 +10000000;
+    system("cls");
+    cout <<"\n\tYOUR ACCOUNT DETAILS\n";
+    cout <<"\nAccount number: " <<accNum <<"\nName: " <<regInfo.name <<"\nBalnce: " <<balance;
+    cout <<"\n\nAccount successfully registered!";
+    cout <<"\nAlways keep your account details.";
 }
 
 void ATM:: pincode(){       //ginagawa niyang asterisk yung PIN
@@ -102,23 +106,38 @@ char ch;
         pin[index++]=ch;
     }
     pin[index]='\0';    //kapag pag 7th digit na
+}
+
+void ATM:: saveRegistration(){
+fstream regFP;
+regFP.open("registration.txt", ios::out);   //out kapag magpi-print sa file
+
+    regFP <<regInfo.name <<"\n";            //Save registration info sa registration.txt
+    regFP <<regInfo.age <<"\n";
+    regFP <<regInfo.birthday <<"\n";
+    regFP <<regInfo.number <<"\n";
+    regFP.close();
+}
+
+void ATM:: savePincode(){
+fstream pinFP;
+pinFP.open("pincode.txt", ios::out);   //out kapag magpi-print sa file
+
+    pinFP <<pin <<"\n";
+    pinFP <<accNum;
+    pinFP.close();
 
 }
 
-/*void ATM:: encrypt(){
-//fstream pinFP;
-//pinFP.open("pincode.txt", ios::out);    //mag-save sa pincode.txt
+void ATM:: encrypt(){
 
 int i=0;
 
     while(pin[i]!='\0'){        //habang di pa NULL
-    pin[i]=pin[i] + 80;       //add code each character
+    pin[i]=pin[i] + 123;       //add code each character
     i++;
-
-
-
-
-}*/
+    }
+}
 
 
 
