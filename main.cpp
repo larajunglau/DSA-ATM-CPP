@@ -5,6 +5,12 @@
 
 using namespace std;
 
+/*typedef struct allAcc{
+    string name;
+    int accNum, balance;
+    struct allAcc *nxt;
+}ALLACC;*/
+
 typedef struct regInfo{
     string name, birthday, number;
     int age;
@@ -17,23 +23,26 @@ private:
     float amount, balance;
     int accNum;
 
-
 public:
+    //ALLACC *head;
     void registration();
     void pincode();
     void saveRegistration();
     void encrypt();
     void savePincode();
+    void addAccount();
+
 
 };
 
 int main()
 {
     ATM atm;
+    //atm.head=NULL;
     atm.registration();
     atm.saveRegistration();
-    atm.savePincode();
     atm.encrypt();
+    atm.savePincode();
 }
 
 void ATM:: registration(){
@@ -129,6 +138,27 @@ pinFP.open("pincode.txt", ios::out);   //out kapag magpi-print sa file
 
 }
 
+/*void ATM:: addAccount(){    //sine-save yung new account sa linkedlist
+ALLACC *n, *p;
+
+    n= new ALLACC;      //allocate memory kay n
+    n=head;
+    n->accNum=accNum; n->name=regInfo.name; n->balance=balance;
+    n->nxt=NULL;
+
+    if(head==NULL){     //kapag wala pang laman linked list
+        head=n;
+    }
+
+    else{               //kapag may laman na linked list
+        n->nxt= head;
+        head=n;
+    }
+
+    cout <<n->name;
+
+}*/
+
 void ATM:: encrypt(){
 
 int i=0;
@@ -138,12 +168,3 @@ int i=0;
     i++;
     }
 }
-
-
-
-
-
-
-
-
-
