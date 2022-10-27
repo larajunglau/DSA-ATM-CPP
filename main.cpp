@@ -2,6 +2,7 @@
 #include <fstream>
 #include <conio.h>
 #include <time.h>
+#include <string.h>
 
 using namespace std;
 
@@ -19,21 +20,24 @@ typedef struct regInfo{
 class ATM{
 private:
     REGINFO regInfo;
+    ALLACC *head, *n;
     char pin[7];
     float amount, balance;
     int accNum;
-    ALLACC *head, *n;
+    void saveRegistration();
+    void encrypt();
+    void savePincode();
+    void retrievePincode();
+    void addAccount();
+    void saveAllAccounts();
+    void decrypt();
 
 public:
     void registration();
     void pincode();
-    void saveRegistration();
-    void encrypt();
-    void savePincode();
-    void addAccount();
     void makeNull();
-    void saveAllAccounts();
-
+    void insertCard();
+    void removeCard();
 
 };
 
@@ -42,12 +46,81 @@ int main()
 {
     ATM atm;
     atm.makeNull();
-    atm.registration();
-    atm.saveRegistration();
-    atm.encrypt();
-    atm.savePincode();
-    atm.addAccount();
-    atm.saveAllAccounts();
+    atm.insertCard();
+
+}
+
+void ATM:: insertCard(){            //dinede-tect niya kung registered na ang card
+fstream pinFP;                      //tsaka sinasabi kay user na mag-insert na ng card
+string c, enteredPin;
+int ch, tries=0;
+
+    do{system("cls");              //hanggang di pa na-insert card, sasabihin na i-insert na.
+        cout <<"Please insert card...\n";
+        pinFP.open("pincode.txt", ios::in);
+    } while(!pinFP);
+
+    //kapag na-insert na card
+    system("cls");
+
+    getline(pinFP, c);     //kukuha ng strring from fp
+    if(c.empty()){  //empty()- iche-check kung ang string ay empty. 1- true 0-false
+        cout <<"\nYour ATM Card is not yet registered.";
+        cout <<"\nDo you want to register?";
+        cout <<"\n(1) REGISTER";
+        cout <<"\n(2) EXIT";
+        cout <<"\nEnter your choice: ";
+        cin >> ch;
+        if(ch==1){system("cls");    //Kapag walang laman or di pa registered
+            registration();
+            saveRegistration();
+            encrypt();
+            savePincode();
+            addAccount();
+            saveAllAccounts();
+        }
+        //di pa nagana
+        else{removeCard(); exit(0);}
+    }
+
+    else{       //kung may laman na or registered na card
+        cout <<"Card is registered";
+        while(enteredPin!=pin && tries<3){        //hanggang di pa correct pin at di pa blocked
+            cout <<"\nEnter pin: ";
+            pincode();
+            enteredPin=pin;
+            retrievePincode();
+            decrypt();
+            if(enteredPin!=pin){                //kapag mali ang pin
+                cout <<"\nIncorrect pin!";
+                tries++;                        //madadagdagan ang number of tries
+            }
+        }
+
+        if(tries==3){       //kapag na-block na
+            cout <<"\nYour account was blocked!";
+            //balik sa homepage.
+        }
+
+        else{              //kapag nakapasok sa menu
+            //menu();
+            cout <<"\nPIN MATCH";
+        }
+    }
+
+}
+
+void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
+fstream pinFP;
+
+    //di pa niya nade-detect kung natanggal na
+    do{ system("cls");
+        cout <<"Please remove card...";
+        pinFP.open("pincode.txt",ios::in);
+    }while(pinFP);
+
+    pinFP.close();
+    cout <<"Thank you for banking with MYLUGI BANK ";
 }
 
 void ATM:: registration(){
@@ -55,6 +128,7 @@ string initialPin;
 
     //*Lagay statement of agreement
     cout <<"\tREGISTRATION\n";
+    cin.ignore();
     cout <<"\nEnter your full name (EX: JUAN DELA CRUZ): ";
     //*Lagay if hindi Uppercase
     getline(cin, regInfo.name);
@@ -79,6 +153,7 @@ string initialPin;
         //*LAGAY NG COMMENT KAPAG DI NAG-MATCH
     }
 
+    //*LAGAY CONDITIONS: IF MUTILPLES OF 100
     while(amount < 5000){               //hanggat mas mababa sa 5000
         system("cls");
         cout <<"\nInitial deposit must be at least 5000";
@@ -93,7 +168,8 @@ string initialPin;
     cout <<"\n\tYOUR ACCOUNT DETAILS\n";
     cout <<"\nAccount number: " <<accNum <<"\nName: " <<regInfo.name <<"\nBalnce: " <<balance;
     cout <<"\n\nAccount successfully registered!";
-    cout <<"\nAlways keep your account details.";
+    cout <<"\nAlways keep your account details.\n";
+    system("pause");
 }
 
 void ATM:: pincode(){       //ginagawa niyang asterisk yung PIN
@@ -144,6 +220,18 @@ pinFP.open("pincode.txt", ios::out);   //out kapag magpi-print sa file
 
 }
 
+void ATM:: retrievePincode(){
+fstream pinFP;
+pinFP.open("pincode.txt", ios::in);  //in kapag mag retrieve from file
+
+    while(!pinFP.eof()){
+        pinFP >>pin;
+        pinFP >>accNum;
+    }
+
+pinFP.close();
+}
+
 void ATM:: saveAllAccounts(){
 fstream allAccFP;
 allAccFP.open("allAccounts.txt", ios::out);   //out kapag magpi-print sa file
@@ -154,19 +242,10 @@ allAccFP.open("allAccounts.txt", ios::out);   //out kapag magpi-print sa file
 
 void ATM:: addAccount(){    //sine-save yung new account sa linkedlist
 
-    n=head; //set lahat sa head
     n= new ALLACC; //allocates memory to n
-    n->name=regInfo.name; n->accNum=accNum; n->balance=balance;
-    n->nxt=NULL;
-
-    if(head==NULL){         //
-        head=n;
-    }
-
-    else{
-        n->nxt=head;
-        head=n;
-    }
+    n->name=regInfo.name; n->accNum=accNum; n->balance=balance; //Lagay info sa n
+    n->nxt=head;    //value ng head ay ilagay sa second node
+    head=n;         //value ng n ay ilagay sa head
 
 }
 
@@ -177,6 +256,15 @@ int i=0;
     while(pin[i]!='\0'){        //habang di pa NULL
     pin[i]=pin[i] + 123;       //add code each character
     i++;
+    }
+}
+
+void ATM:: decrypt(){     //from random symbol, papalabasin pin code para ma-check kung match inenter.
+int i=0;
+
+    while(pin[i]!='\0'){            //habang di pa NULL
+        pin[i]=pin[i] - 123;       //minus code each character
+        i++;
     }
 }
 
