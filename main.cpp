@@ -3,6 +3,8 @@
 #include <conio.h>
 #include <time.h>
 #include <string.h>
+#include <ctime>       /* time_t, struct tm, time, gmtime */
+#define UTC (+8) /define UTC +8 para sa timezone ng ph
 
 using namespace std;
 
@@ -22,6 +24,7 @@ private:
     REGINFO regInfo;
     ALLACC *head, *n;
     char pin[7];
+    string type;
     float amount, balance;
     int accNum;
     void saveRegistration();
@@ -31,6 +34,7 @@ private:
     void addAccount();
     void saveAllAccounts();
     void decrypt();
+    void Date();
 
 public:
     void registration();
@@ -38,6 +42,7 @@ public:
     void makeNull();
     void insertCard();
     void removeCard();
+    void balInquiry();
     int menu();
 
 };
@@ -51,7 +56,7 @@ int main()
     atm.insertCard();
     switch(atm.menu()){
         system("cls");
-        case 1: system("cls"); cout <<"\nBalance inquiry";
+        case 1: system("cls"); atm.balInquiry();break;
 
     }
 
@@ -112,6 +117,29 @@ int ch, tries=0;
         }
     }
 }
+
+void ATM:: balInquiry(){
+    int choice;
+    type ="Balance Inquiry";
+    cout <<"\tBALANCE INQUIRY";
+    cout<< "\n\n(1) Show balance on screen";
+    cout<< "\n(2) Print receipt";
+    cout<< "\n\nPlease Enter your choice (1-2): ";
+    cin>> choice;
+        if(choice==1){
+                system("cls");
+                cout<< "Date: "; Date();
+                cout<< "Transcaction Type: " << type <<"\n" ;
+                cout<< "Account Number: " << accNum <<"\n" ;
+                cout<< "Account Balance: " << balance <<"\n";
+                system("pause");
+        }
+        else{
+            cout<<"\nPrint receipt";
+            //bukas receipt.txt
+        }
+}
+
 
 void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
 fstream pinFP;
@@ -292,26 +320,6 @@ int ATM:: menu(){
     cout <<"Enter option (1-8): ";
     cin >> option;
     return option;
-}
-
-void ATM::balInquiry(){
-    int x;
-    string transtype ="Balance Inquiry";
-    //printtitle;
-    cout<<"[1]Display balance on screen\n", cout<<"[2]Print receipt\n";
-    cout<< "Please Enter: "; cin>>x;
-        if(x==1){
-                system("cls");
-                cout<< "Date: "; Date();
-                cout<< "Transcaction Type: " << transtype <<"\n" ;
-                cout<< "Account Number: " << accNum <<"\n" ;
-                cout<< "Account Balance: " << balance <<"\n";
-                system("pause");
-        }
-        else{
-            cout<<"Print receipt";
-            //bukas receipt.txt
-        }
 }
 
 void ATM::Date() // 24 hr format
