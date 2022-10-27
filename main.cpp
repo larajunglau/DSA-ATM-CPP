@@ -38,8 +38,10 @@ public:
     void makeNull();
     void insertCard();
     void removeCard();
+    int menu();
 
 };
+
 
 //int head=NULL;
 int main()
@@ -47,6 +49,12 @@ int main()
     ATM atm;
     atm.makeNull();
     atm.insertCard();
+    switch(atm.menu()){
+        system("cls");
+        case 1: system("cls"); cout <<"\nBalance inquiry";
+
+    }
+
 
 }
 
@@ -99,15 +107,10 @@ int ch, tries=0;
 
         if(tries==3){       //kapag na-block na
             cout <<"\nYour account was blocked!";
+            removeCard();
             //balik sa homepage.
         }
-
-        else{              //kapag nakapasok sa menu
-            //menu();
-            cout <<"\nPIN MATCH";
-        }
     }
-
 }
 
 void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
@@ -121,6 +124,7 @@ fstream pinFP;
 
     pinFP.close();
     cout <<"Thank you for banking with MYLUGI BANK ";
+    exit(0);
 }
 
 void ATM:: registration(){
@@ -270,4 +274,53 @@ int i=0;
 
 void ATM::makeNull(){
     head==NULL;
+}
+
+int ATM:: menu(){
+
+    int option;
+    system("cls");
+    cout <<"\t\tMENU\n";
+    cout <<"1. Balance Inquiry\n";
+    cout <<"2. Withdrawal\n";
+    cout <<"3. Deposit\n";
+    cout <<"4. Fund Transfer\n";
+    cout <<"5. Change Pincode\n";
+    cout <<"6. Transfer history\n";
+    cout <<"7. Other Transactions\n";
+    cout <<"8. Exit\n";
+    cout <<"Enter option (1-8): ";
+    cin >> option;
+    return option;
+}
+
+void ATM::balInquiry(){
+    int x;
+    string transtype ="Balance Inquiry";
+    //printtitle;
+    cout<<"[1]Display balance on screen\n", cout<<"[2]Print receipt\n";
+    cout<< "Please Enter: "; cin>>x;
+        if(x==1){
+                system("cls");
+                cout<< "Date: "; Date();
+                cout<< "Transcaction Type: " << transtype <<"\n" ;
+                cout<< "Account Number: " << accNum <<"\n" ;
+                cout<< "Account Balance: " << balance <<"\n";
+                system("pause");
+        }
+        else{
+            cout<<"Print receipt";
+            //bukas receipt.txt
+        }
+}
+
+void ATM::Date() // 24 hr format
+{
+time_t ttime = time(0); // currrent time
+char* dateTime = ctime(&ttime); //ctime gagawin niya yung dateTime na string in weekday month date hours:minutes:seconds year.
+
+tm *gmt_time = gmtime(&ttime); //Returns pointer to the tm structure in the Coordinated Universal Time (UTC) format which is essentially Greenwich Mean Time (GMT).
+//define na yung utc +8 para time zone ng philippines
+cout << dateTime << endl; //print dateTime
+dateTime = asctime(gmt_time); //print yung current time ng Philippines
 }
