@@ -38,6 +38,7 @@ private:
     //void findAccount();
 
 public:
+    void retrieveAllAccounts();
     void registration();
     void pincode();
     void makeNull();
@@ -55,6 +56,7 @@ int main()
     ATM atm;
     atm.makeNull();
     atm.insertCard();
+    atm.retrieveAllAccounts();
     switch(atm.menu()){
         system("cls");
         case 1: system("cls"); atm.balInquiry();break;
@@ -133,8 +135,8 @@ void ATM:: balInquiry(){
                 system("cls");
                 cout<< "Date: "; Date();
                 cout<< "Transcaction Type: " <<type <<"\n" ;
-                cout<< "Account Number: " << accNum <<"\n" ;
-                cout<< "Account Balance: " << balance <<"\n";
+                cout<< "Account Number: " << head->accNum <<"\n" ;
+                cout<< "Account Balance: " << head->balance <<"\n";
                 system("pause");
         }
         else{
@@ -309,6 +311,31 @@ ALLACC *p;
         }
         cout <<"\nRecords saved successfully.\n";
         system("pause");
+    }
+    allAccFP.close();
+}
+
+void ATM::retrieveAllAccounts(){            //kukunin yung mga accounts mula sa allAccounts.txt at isasalin sa linkedlist
+fstream allAccFP;
+allAccFP.open("allAccounts.txt", ios::in);
+
+    if(!allAccFP){
+        cout<< "File error!\n";
+        system("pause");
+    }
+
+    else{
+        while(1){
+            allAccFP >>accNum;
+            allAccFP.ignore();                 //flushes the file
+            getline(allAccFP, regInfo.name);
+            allAccFP >>balance;
+
+            if(!allAccFP.eof()){
+                addAccount();
+            }
+            else{break;}
+        }
     }
     allAccFP.close();
 }
