@@ -35,6 +35,7 @@ private:
     void saveAllAccounts();
     void decrypt();
     void Date();
+    //void findAccount();
 
 public:
     void registration();
@@ -99,14 +100,16 @@ int ch, tries=0;
     else{       //kung may laman na or registered na card
         cout <<"Card is registered";
         while(enteredPin!=pin && tries<3){        //hanggang di pa correct pin at di pa blocked
+            system("cls");
             cout <<"\nEnter pin: ";
             pincode();
             enteredPin=pin;
             retrievePincode();
             decrypt();
             if(enteredPin!=pin){                //kapag mali ang pin
-                cout <<"\nIncorrect pin!";
-                tries++;                        //madadagdagan ang number of tries
+                cout <<"\nIncorrect pin!\n";
+                tries++; system("pause");                       //madadagdagan ang number of tries
+
             }
         }
 
@@ -129,7 +132,7 @@ void ATM:: balInquiry(){
         if(choice==1){
                 system("cls");
                 cout<< "Date: "; Date();
-                cout<< "Transcaction Type: " << type <<"\n" ;
+                cout<< "Transcaction Type: " <<type <<"\n" ;
                 cout<< "Account Number: " << accNum <<"\n" ;
                 cout<< "Account Balance: " << balance <<"\n";
                 system("pause");
@@ -139,6 +142,20 @@ void ATM:: balInquiry(){
             //bukas receipt.txt
         }
 }
+
+/*void ATM:: findAccount(){   //hinahanap yung account num sa allAccounts.txt, at kukunin ang name at balanca.
+fstream allAccFP;
+allAccFP.open("allAccounts.txt", ios::in);
+string temp;
+    while(1){
+        getline(allAccFP, temp);
+        if(temp==accNum){
+            allAccFP >> allAcc.name;
+            allAccFP >> allAcc.balance;
+            break;
+        }
+    }
+}*/
 
 
 void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
@@ -264,7 +281,7 @@ pinFP.open("pincode.txt", ios::in);  //in kapag mag retrieve from file
 pinFP.close();
 }
 
-void ATM:: saveAllAccounts(){
+void ATM:: saveAllAccounts(){       //ise-save sa text file yung linkedlist ng allAccounts
 fstream allAccFP;
 allAccFP.open("allAccounts.txt", ios::out);   //out kapag magpi-print sa file
 
