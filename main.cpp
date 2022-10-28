@@ -281,11 +281,35 @@ pinFP.open("pincode.txt", ios::in);  //in kapag mag retrieve from file
 pinFP.close();
 }
 
-void ATM:: saveAllAccounts(){       //ise-save sa text file yung linkedlist ng allAccounts
+/*void ATM:: saveAllAccounts(){       //ise-save sa text file yung linkedlist ng allAccounts
 fstream allAccFP;
 allAccFP.open("allAccounts.txt", ios::out);   //out kapag magpi-print sa file
 
     allAccFP <<n->accNum <<"\n" <<n->name <<"\n" <<n->balance <<"\n";
+    allAccFP.close();
+}*/
+
+void ATM::saveAllAccounts(){
+fstream allAccFP; //creates a file pointer. fstream para both in and out for iostream.
+allAccFP.open("allAccounts.txt", ios::out); //filePointerName.method ("file_name", ios::mode). -format to access file.
+
+ALLACC *p;
+
+    p=head;
+    if(!allAccFP){
+        cout <<"File error!\n";;
+        system("pause");
+    }
+    else{
+        while(p!=NULL){                         //hanggat di pa dulo
+            allAccFP <<p->accNum <<"\n";
+            allAccFP <<p->name <<"\n";
+            allAccFP <<p->balance <<"\n";
+            p=p->nxt;                           //usod sa next account
+        }
+        cout <<"\nRecords saved successfully.\n";
+        system("pause");
+    }
     allAccFP.close();
 }
 
