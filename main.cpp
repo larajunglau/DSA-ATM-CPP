@@ -22,7 +22,7 @@ typedef struct regInfo{
 class ATM{
 private:
     REGINFO regInfo;
-    ALLACC *head, *n;
+    ALLACC *head, *n, *p;
     char pin[7];
     string type;
     float amount, balance;
@@ -38,7 +38,9 @@ private:
     //void findAccount();
 
 public:
+    int accountNumber;
     void retrieveAllAccounts();
+    void findAccount();
     void registration();
     void pincode();
     void makeNull();
@@ -57,6 +59,7 @@ int main()
     atm.makeNull();
     atm.insertCard();
     atm.retrieveAllAccounts();
+    atm.findAccount();
     switch(atm.menu()){
         system("cls");
         case 1: system("cls"); atm.balInquiry();break;
@@ -135,8 +138,8 @@ void ATM:: balInquiry(){
                 system("cls");
                 cout<< "Date: "; Date();
                 cout<< "Transcaction Type: " <<type <<"\n" ;
-                cout<< "Account Number: " << head->accNum <<"\n" ;
-                cout<< "Account Balance: " << head->balance <<"\n";
+                cout<< "Account Number: " << p->accNum <<"\n" ;
+                cout<< "Account Balance: " << p->balance <<"\n";
                 system("pause");
         }
         else{
@@ -291,9 +294,22 @@ allAccFP.open("allAccounts.txt", ios::out);   //out kapag magpi-print sa file
     allAccFP.close();
 }*/
 
-void ATM::saveAllAccounts(){
-fstream allAccFP; //creates a file pointer. fstream para both in and out for iostream.
-allAccFP.open("allAccounts.txt", ios::out); //filePointerName.method ("file_name", ios::mode). -format to access file.
+void ATM:: findAccount(){           //hinahanap yung account info ng current user.
+
+    p=head;
+
+    retrievePincode();
+    while(p!=NULL && p->accNum != accNum){
+        p=p->nxt;
+    }
+
+    cout << p->name <<p->accNum;
+    system("pause");
+}
+
+void ATM::saveAllAccounts(){        //pini-print sa text file ang lahat ng accounts
+fstream allAccFP;
+allAccFP.open("allAccounts.txt", ios::out);
 
 ALLACC *p;
 
@@ -306,7 +322,7 @@ ALLACC *p;
         while(p!=NULL){                         //hanggat di pa dulo
             allAccFP <<p->accNum <<"\n";
             allAccFP <<p->name <<"\n";
-            allAccFP <<p->balance <<"\n";
+            allAccFP <<p->balance <<"\n\n";
             p=p->nxt;                           //usod sa next account
         }
         cout <<"\nRecords saved successfully.\n";
