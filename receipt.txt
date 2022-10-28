@@ -1,0 +1,7 @@
+	TITLE NG BANK
+Fri Oct 28 10:40:38 2022
+Transaction Type: Balance Inquiry
+Account Number: 10010877
+Account Balance: 9000
+
+Thank you!

@@ -24,15 +24,17 @@ private:
     REGINFO regInfo;
     ALLACC *head, *n, *p;
     char pin[7];
+    char* dateTime;
     string type;
     float amount, balance;
-    int accNum;
+    int accNum, option;
     void saveRegistration();
     void encrypt();
     void savePincode();
     void retrievePincode();
     void addAccount();
     void saveAllAccounts();
+    void saveReceipt();
     void decrypt();
     void Date();
     //void findAccount();
@@ -57,8 +59,8 @@ int main()
 {
     ATM atm;
     atm.makeNull();
-    atm.insertCard();
     atm.retrieveAllAccounts();
+    atm.insertCard();
     atm.findAccount();
     switch(atm.menu()){
         system("cls");
@@ -97,6 +99,7 @@ int ch, tries=0;
             savePincode();
             addAccount();
             saveAllAccounts();
+            removeCard(); exit(0);
         }
         //di pa nagana
         else{removeCard(); exit(0);}
@@ -144,38 +147,48 @@ void ATM:: balInquiry(){
         }
         else{
             cout<<"\nPrint receipt";
+            saveReceipt();
             //bukas receipt.txt
         }
 }
 
-/*void ATM:: findAccount(){   //hinahanap yung account num sa allAccounts.txt, at kukunin ang name at balanca.
-fstream allAccFP;
-allAccFP.open("allAccounts.txt", ios::in);
-string temp;
-    while(1){
-        getline(allAccFP, temp);
-        if(temp==accNum){
-            allAccFP >> allAcc.name;
-            allAccFP >> allAcc.balance;
-            break;
-        }
+void ATM:: saveReceipt(){
+fstream receiptFP;
+receiptFP.open("receipt.txt", ios::out);
+
+    Date();
+
+    receiptFP <<"\tTITLE NG BANK\n";
+    receiptFP <<dateTime;
+    receiptFP <<"Transaction Type: " <<type <<"\n";
+    receiptFP <<"Account Number: " <<p->accNum <<"\n";
+    receiptFP <<"Account Balance: " <<p->balance <<"\n";
+
+    if(option==4){
+        receiptFP <<"Amount transferred: " <<amount <<"\n";
+        receiptFP <<"Recipient: " <<"\n";
+
     }
-}*/
+
+    receiptFP <<"\nThank you!";
+
+receiptFP.close();
+}
 
 
 void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
 fstream pinFP;
-
+pinFP.open("pincode.txt.txt",ios::in);
     //di pa niya nade-detect kung natanggal na
     do{ system("cls");
         cout <<"Please remove card...";
-        pinFP.open("pincode.txt",ios::in);
     }while(pinFP);
 
     pinFP.close();
     cout <<"Thank you for banking with MYLUGI BANK ";
     exit(0);
 }
+
 
 void ATM:: registration(){
 string initialPin;
@@ -390,7 +403,6 @@ void ATM::makeNull(){
 
 int ATM:: menu(){
 
-    int option;
     system("cls");
     cout <<"\t\tMENU\n";
     cout <<"1. Balance Inquiry\n";
@@ -409,7 +421,7 @@ int ATM:: menu(){
 void ATM::Date() // 24 hr format
 {
 time_t ttime = time(0); // currrent time
-char* dateTime = ctime(&ttime); //ctime gagawin niya yung dateTime na string in weekday month date hours:minutes:seconds year.
+dateTime = ctime(&ttime); //ctime gagawin niya yung dateTime na string in weekday month date hours:minutes:seconds year.
 
 tm *gmt_time = gmtime(&ttime); //Returns pointer to the tm structure in the Coordinated Universal Time (UTC) format which is essentially Greenwich Mean Time (GMT).
 //define na yung utc +8 para time zone ng philippines
