@@ -24,7 +24,6 @@ private:
     REGINFO regInfo;
     ALLACC *head, *n, *p;
     char pin[7];
-    char* dateTime;
     string type;
     float amount, balance;
     int accNum, option;
@@ -33,10 +32,10 @@ private:
     void savePincode();
     void retrievePincode();
     void addAccount();
+    void addRetrieve();
     void saveAllAccounts();
     void saveReceipt();
     void decrypt();
-    void Date();
     //void findAccount();
 
 public:
@@ -52,8 +51,8 @@ public:
     int menu();
 
 };
-
-
+void Date();
+char* dateTime;
 //int head=NULL;
 int main()
 {
@@ -65,10 +64,10 @@ int main()
     switch(atm.menu()){
         system("cls");
         case 1: system("cls"); atm.balInquiry();break;
-
+        case 8: system("cls"); atm.removeCard(); break;
     }
 
-
+return 0;
 }
 
 void ATM:: insertCard(){            //dinede-tect niya kung registered na ang card
@@ -78,7 +77,7 @@ int ch, tries=0;
 
     do{system("cls");              //hanggang di pa na-insert card, sasabihin na i-insert na.
         cout <<"Please insert card...\n";
-        pinFP.open("pincode.txt", ios::in);
+        pinFP.open("D:\pincode.txt", ios::in);
     } while(!pinFP);
 
     //kapag na-insert na card
@@ -99,14 +98,14 @@ int ch, tries=0;
             savePincode();
             addAccount();
             saveAllAccounts();
-            removeCard(); exit(0);
+            removeCard(); system("pause");
+
         }
         //di pa nagana
         else{removeCard(); exit(0);}
     }
 
     else{       //kung may laman na or registered na card
-        cout <<"Card is registered";
         while(enteredPin!=pin && tries<3){        //hanggang di pa correct pin at di pa blocked
             system("cls");
             cout <<"\nEnter pin: ";
@@ -146,7 +145,6 @@ void ATM:: balInquiry(){
                 system("pause");
         }
         else{
-            cout<<"\nPrint receipt";
             saveReceipt();
             //bukas receipt.txt
         }
@@ -154,7 +152,12 @@ void ATM:: balInquiry(){
 
 void ATM:: saveReceipt(){
 fstream receiptFP;
-receiptFP.open("receipt.txt", ios::out);
+receiptFP.open("D:\receipt.txt", ios::out);
+
+    if(!receiptFP){
+        cout <<"receipt.txt do not exist!\n";;
+        system("pause");
+    }
 
     Date();
 
@@ -176,19 +179,30 @@ receiptFP.close();
 }
 
 
-void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
+/*void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
 fstream pinFP;
-pinFP.open("pincode.txt.txt",ios::in);
+pinFP.open("D:\pincode.txt",ios::in);
     //di pa niya nade-detect kung natanggal na
-    do{ system("cls");
+    do{
+        system("cls");
         cout <<"Please remove card...";
     }while(pinFP);
 
     pinFP.close();
     cout <<"Thank you for banking with MYLUGI BANK ";
     exit(0);
-}
+}*/
 
+void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
+FILE *pinFP;
+    do{ system("cls");
+        printf("Please remove card...");
+        pinFP=fopen("D:\pincode.txt","r");
+    } while(pinFP!=NULL);
+    fclose(pinFP);
+    printf("\nThank you for banking with MYLUGI BANK ");
+    exit(0);
+}
 
 void ATM:: registration(){
 string initialPin;
@@ -212,10 +226,10 @@ string initialPin;
     initialPin= " ";                    //pang-reset ng value ng initialPin
     while(initialPin!=pin){             //hanggat hindi nag-match, ulit sa ask pincode.
         system("cls");
-        cout <<"\nEnter your PIN: ";
+        cout <<"\nEnter 6-digit PIN: ";
         pincode();  //mag-enter ng PIN
         initialPin=pin;                 //sinalin si pin sa initialPin na string.
-        cout <<"\nRe-enter PIN :";
+        cout <<"\nRe-enter 6-digit PIN :";
         pincode();
         //*LAGAY NG COMMENT KAPAG DI NAG-MATCH
     }
@@ -236,7 +250,6 @@ string initialPin;
     cout <<"\nAccount number: " <<accNum <<"\nName: " <<regInfo.name <<"\nBalnce: " <<balance;
     cout <<"\n\nAccount successfully registered!";
     cout <<"\nAlways keep your account details.\n";
-    system("pause");
 }
 
 void ATM:: pincode(){       //ginagawa niyang asterisk yung PIN
@@ -268,8 +281,12 @@ char ch;
 
 void ATM:: saveRegistration(){
 fstream regFP;
-regFP.open("registration.txt", ios::out);   //out kapag magpi-print sa file
+regFP.open("D:\registration.txt", ios::out);   //out kapag magpi-print sa file
 
+    if(!regFP){
+        cout <<"registration.txt do not exist!\n";;
+        system("pause");
+    }
     regFP <<regInfo.name <<"\n";            //Save registration info sa registration.txt
     regFP <<regInfo.age <<"\n";
     regFP <<regInfo.birthday <<"\n";
@@ -279,7 +296,7 @@ regFP.open("registration.txt", ios::out);   //out kapag magpi-print sa file
 
 void ATM:: savePincode(){
 fstream pinFP;
-pinFP.open("pincode.txt", ios::out);   //out kapag magpi-print sa file
+pinFP.open("D:\pincode.txt", ios::out);   //out kapag magpi-print sa file
 
     pinFP <<pin <<"\n";
     pinFP <<accNum;
@@ -289,7 +306,12 @@ pinFP.open("pincode.txt", ios::out);   //out kapag magpi-print sa file
 
 void ATM:: retrievePincode(){
 fstream pinFP;
-pinFP.open("pincode.txt", ios::in);  //in kapag mag retrieve from file
+pinFP.open("D:\pincode.txt", ios::in);  //in kapag mag retrieve from file
+
+    if(!pinFP){
+        cout <<"pincode.txt do not exist!\n";;
+        system("pause");
+    }
 
     while(!pinFP.eof()){
         pinFP >>pin;
@@ -302,7 +324,6 @@ pinFP.close();
 /*void ATM:: saveAllAccounts(){       //ise-save sa text file yung linkedlist ng allAccounts
 fstream allAccFP;
 allAccFP.open("allAccounts.txt", ios::out);   //out kapag magpi-print sa file
-
     allAccFP <<n->accNum <<"\n" <<n->name <<"\n" <<n->balance <<"\n";
     allAccFP.close();
 }*/
@@ -315,9 +336,6 @@ void ATM:: findAccount(){           //hinahanap yung account info ng current use
     while(p!=NULL && p->accNum != accNum){
         p=p->nxt;
     }
-
-    cout << p->name <<p->accNum;
-    system("pause");
 }
 
 void ATM::saveAllAccounts(){        //pini-print sa text file ang lahat ng accounts
@@ -328,7 +346,7 @@ ALLACC *p;
 
     p=head;
     if(!allAccFP){
-        cout <<"File error!\n";;
+        cout <<"allAccounts.txt do not exist!\n";;
         system("pause");
     }
     else{
@@ -361,7 +379,7 @@ allAccFP.open("allAccounts.txt", ios::in);
             allAccFP >>balance;
 
             if(!allAccFP.eof()){
-                addAccount();
+                addRetrieve();
             }
             else{break;}
         }
@@ -375,6 +393,26 @@ void ATM:: addAccount(){    //sine-save yung new account sa linkedlist
     n->name=regInfo.name; n->accNum=accNum; n->balance=balance; //Lagay info sa n
     n->nxt=head;    //value ng head ay ilagay sa second node
     head=n;         //value ng n ay ilagay sa head
+}
+
+void ATM:: addRetrieve(){   //sine-save yung lahat ng accounts mulsa sa file sa LinkedList
+ALLACC *q, *p, *n;
+
+    n= new ALLACC; //allocates memory to n
+    n->name=regInfo.name; n->accNum=accNum; n->balance=balance;
+    p=q=head; //set lahat sa head
+    while(p!=NULL){
+        q=p;
+        p=p->nxt;
+    }
+    cout <<"while";
+
+    if(p==head){ //If wala pang laman
+        head=n;
+    }
+    else{q->nxt=n;} //if may laman na
+
+    n->nxt=p; //lagay NULL sa dulo which is p.
 
 }
 
@@ -398,7 +436,7 @@ int i=0;
 }
 
 void ATM::makeNull(){
-    head==NULL;
+    head=NULL;
 }
 
 int ATM:: menu(){
@@ -418,7 +456,7 @@ int ATM:: menu(){
     return option;
 }
 
-void ATM::Date() // 24 hr format
+void Date() // 24 hr format
 {
 time_t ttime = time(0); // currrent time
 dateTime = ctime(&ttime); //ctime gagawin niya yung dateTime na string in weekday month date hours:minutes:seconds year.
