@@ -23,6 +23,7 @@ class ATM{
 private:
     REGINFO regInfo;
     ALLACC *head, *n, *p;
+    //int index;
     char pin[7];
     string type;
     float amount, balance;
@@ -77,7 +78,7 @@ int ch, tries=0;
 
     do{system("cls");              //hanggang di pa na-insert card, sasabihin na i-insert na.
         cout <<"Please insert card...\n";
-        pinFP.open("D:\pincode.txt", ios::in);
+        pinFP.open("D:pincode.txt", ios::in);
     } while(!pinFP);
 
     //kapag na-insert na card
@@ -108,7 +109,7 @@ int ch, tries=0;
     else{       //kung may laman na or registered na card
         while(enteredPin!=pin && tries<3){        //hanggang di pa correct pin at di pa blocked
             system("cls");
-            cout <<"\nEnter pin: ";
+            cout <<"\nEnter 6-digit pin: ";
             pincode();
             enteredPin=pin;
             retrievePincode();
@@ -152,7 +153,7 @@ void ATM:: balInquiry(){
 
 void ATM:: saveReceipt(){
 fstream receiptFP;
-receiptFP.open("D:\receipt.txt", ios::out);
+receiptFP.open("D:receipt.txt", ios::out);   //out kapag magpi-print sa file
 
     if(!receiptFP){
         cout <<"receipt.txt do not exist!\n";;
@@ -193,7 +194,7 @@ pinFP.open("D:\pincode.txt",ios::in);
     exit(0);
 }*/
 
-void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
+void ATM:: removeCard(){      //in C   //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
 FILE *pinFP;
     do{ system("cls");
         printf("Please remove card...");
@@ -228,6 +229,10 @@ string initialPin;
         system("cls");
         cout <<"\nEnter 6-digit PIN: ";
         pincode();  //mag-enter ng PIN
+            /*while(index <5){
+                cout <<"\nEnter 6-digit PIN: ";
+                pincode();
+            }*/
         initialPin=pin;                 //sinalin si pin sa initialPin na string.
         cout <<"\nRe-enter 6-digit PIN :";
         pincode();
@@ -235,9 +240,9 @@ string initialPin;
     }
 
     //*LAGAY CONDITIONS: IF MUTILPLES OF 100
-    while(amount < 5000){               //hanggat mas mababa sa 5000
+    while(amount < 1000){               //hanggat mas mababa sa 5000
         system("cls");
-        cout <<"\nInitial deposit must be at least 5000";
+        cout <<"\nInitial deposit must be at least 1000";
         cout <<"\nEnter amount of initial deposit: ";
         cin >>amount;
     }
@@ -277,11 +282,17 @@ char ch;
         pin[index++]=ch;
     }
     pin[index]='\0';    //kapag pag 7th digit na
+
+    if (index <5){
+        system("cls");
+        cout <<"\nEnter 6-digit pin: ";
+        pincode();
+    }
 }
 
 void ATM:: saveRegistration(){
 fstream regFP;
-regFP.open("D:\registration.txt", ios::out);   //out kapag magpi-print sa file
+regFP.open("D:registration.txt", ios::out);   //out kapag magpi-print sa file
 
     if(!regFP){
         cout <<"registration.txt do not exist!\n";;
@@ -320,13 +331,6 @@ pinFP.open("D:\pincode.txt", ios::in);  //in kapag mag retrieve from file
 
 pinFP.close();
 }
-
-/*void ATM:: saveAllAccounts(){       //ise-save sa text file yung linkedlist ng allAccounts
-fstream allAccFP;
-allAccFP.open("allAccounts.txt", ios::out);   //out kapag magpi-print sa file
-    allAccFP <<n->accNum <<"\n" <<n->name <<"\n" <<n->balance <<"\n";
-    allAccFP.close();
-}*/
 
 void ATM:: findAccount(){           //hinahanap yung account info ng current user.
 
