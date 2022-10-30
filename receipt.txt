@@ -1,7 +1,7 @@
 	TITLE NG BANK
-Sat Oct 29 14:19:36 2022
+Sun Oct 30 05:11:56 2022
 Transaction Type: Balance Inquiry
-Account Number: 10014000
-Account Balance: 9000
+Account Number: 10025829
+Account Balance: 8000
 
 Thank you!
