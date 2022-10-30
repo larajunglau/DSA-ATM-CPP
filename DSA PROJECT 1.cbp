@@ -32,8 +32,10 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="allAccounts.txt" />
 		<Unit filename="main.cpp" />
 		<Unit filename="pincode.txt" />
+		<Unit filename="receipt.txt" />
 		<Unit filename="registration.txt" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

@@ -5,12 +5,14 @@
 #include <string.h>
 #include <ctime>       /* time_t, struct tm, time, gmtime */
 #include <locale>
+#include <iomanip>
 
 using namespace std;
 
 typedef struct allAcc{
     string name;
-    int accNum, balance;
+    int accNum;
+    float balance;
     struct allAcc *nxt;
 }ALLACC;
 
@@ -53,6 +55,21 @@ public:
     int menu();
 };
 
+class comma_numpunct : public std::numpunct<char>
+{
+  protected:
+    virtual char do_thousands_sep() const
+    {
+        return ',';
+    }
+
+    virtual std::string do_grouping() const
+    {
+        return "\03";
+    }
+};
+
+void putComma();
 void Date();
 char dateTime[100];
 //int head=NULL;
@@ -143,12 +160,14 @@ int choice;
     cout<< "\n\nPlease Enter your choice (1-2): ";
     cin>> choice;
         if(choice==1){
-                system("cls");
-                cout<< "Date: "; Date(); cout <<dateTime <<"\n\n";
-                cout<< "Transcaction Type: " <<type <<"\n" ;
-                cout<< "Account Number: " << p->accNum <<"\n" ;
-                cout<< "Account Balance: " << p->balance <<"\n";
-                system("pause");
+            system("cls");
+            cout <<"Date: "; Date(); cout <<dateTime <<"\n\n";
+            cout <<"Transcaction Type: " <<type <<"\n" ;
+            cout <<"Account Number: " << p->accNum <<"\n" ;
+            cout <<"Account Balance: ";
+            putComma();         //ginagawang money format ang float.
+            cout << p->balance <<"\n";
+            system("pause");
         }
         else{
             saveReceipt();
@@ -215,12 +234,14 @@ receiptFP.open("receipt.txt", ios::out);   //out kapag magpi-print sa file
     receiptFP <<"Transaction Type: " <<type <<"\n";
     receiptFP <<"Account Number: " <<p->accNum <<"\n";
     if(option==2 ||option==3 ||option==4 ){
-        receiptFP <<"Amount: " <<amount <<"\n";
+        receiptFP <<"Amount: " <<std::setprecision(2) << std::fixed <<amount <<"\n";
     }
     if(option==5){
         receiptFP <<"Recipient: " <<"\n";
     }
-    receiptFP <<"Account Balance: " <<p->balance <<"\n";
+
+    receiptFP <<"Account Balance: ";
+    receiptFP <<std::setprecision(2) << std::fixed <<p->balance <<"\n";
 
     cout <<"\nCheck your receipt in receipt.txt.\n";
     system("pause");
@@ -516,3 +537,12 @@ void Date() // 24 hr format
     (strftime(dateTime, sizeof(dateTime), "%a %B %d,%Y %I:%M:%S %p "  ,localtime(&ttime))); //strttime converts the date and time information from a given calendar time
         //cout << dateTime << '\n';  // a = weekday  B= month, d= day, Y= year x= time in 2 hr format  p = am or pm in strftime
 }
+
+void putComma(){
+    std::locale comma_locale(std::locale(), new comma_numpunct());
+    std::cout.imbue(comma_locale);
+    cout << std::setprecision(2) << std::fixed;
+}
+
+
+
