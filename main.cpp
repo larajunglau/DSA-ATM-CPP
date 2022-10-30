@@ -4,7 +4,7 @@
 #include <time.h>
 #include <string.h>
 #include <ctime>       /* time_t, struct tm, time, gmtime */
-#define UTC (+8) /define UTC +8 para sa timezone ng ph
+#include <locale>
 
 using namespace std;
 
@@ -48,12 +48,13 @@ public:
     void makeNull();
     void insertCard();
     void removeCard();
+    void withdrawal();
     void balInquiry();
     int menu();
-
 };
+
 void Date();
-char* dateTime;
+char dateTime[100];
 //int head=NULL;
 int main()
 {
@@ -62,10 +63,13 @@ int main()
     atm.retrieveAllAccounts();
     atm.insertCard();
     atm.findAccount();
-    switch(atm.menu()){
-        system("cls");
-        case 1: system("cls"); atm.balInquiry();break;
-        case 8: system("cls"); atm.removeCard(); break;
+    while(1){
+        switch(atm.menu()){
+            system("cls");
+            case 1: system("cls"); atm.balInquiry(); break;
+            case 2: system("cls"); atm.withdrawal(); break;
+            case 8: system("cls"); atm.removeCard(); break;
+        }
     }
 
 return 0;
@@ -78,7 +82,7 @@ int ch, tries=0;
 
     do{system("cls");              //hanggang di pa na-insert card, sasabihin na i-insert na.
         cout <<"Please insert card...\n";
-        pinFP.open("D:pincode.txt", ios::in);
+        pinFP.open("pincode.txt", ios::in);
     } while(!pinFP);
 
     //kapag na-insert na card
@@ -130,7 +134,8 @@ int ch, tries=0;
 }
 
 void ATM:: balInquiry(){
-    int choice;
+int choice;
+
     type ="Balance Inquiry";
     cout <<"\tBALANCE INQUIRY";
     cout<< "\n\n(1) Show balance on screen";
@@ -139,7 +144,7 @@ void ATM:: balInquiry(){
     cin>> choice;
         if(choice==1){
                 system("cls");
-                cout<< "Date: "; Date();
+                cout<< "Date: "; Date(); cout <<dateTime <<"\n\n";
                 cout<< "Transcaction Type: " <<type <<"\n" ;
                 cout<< "Account Number: " << p->accNum <<"\n" ;
                 cout<< "Account Balance: " << p->balance <<"\n";
@@ -151,30 +156,75 @@ void ATM:: balInquiry(){
         }
 }
 
+void ATM:: withdrawal(){
+int temp, ch, i;
+
+    type= "Withdrawal";
+    cout <<"\tWITHDRAWAL\n\n";
+    cout <<"This machine can only dispense 100, 500, and 1000 bills\n\n";
+    system("pause");
+    while(temp %100!=0 || amount > (p->balance-500) || amount > 20000){
+        system("cls");
+        cout <<"\tWITHDRAWAL\n\n";
+        cout <<"Enter amount: ";
+        cin >> amount;
+        temp=(int) amount;  //store sa int varabiale ang amount para magamit modulo.
+
+        if(temp %100!=0){
+            cout <<"\nThis machine can only dispense 100, 500, and 1000 bills\n\n";
+            system("pause");}
+        else if(amount > (p->balance-500)){
+            cout <<"\nInsufficient balance!\n";
+            system("pause");}
+        else if(amount > 20000){
+            cout <<"\nAmount must not exceed P20,000";
+            system("pause");}
+    }
+
+    p->balance-= amount;    //ima-iminus yung amount sa balance
+    cout <<"\nDo you want a printed receipt?";
+    cout <<"\n(1) YES" <<"\n(2) NO";
+    cout <<"\nEnter your choice: ";
+    cin >> ch;
+
+    for(i=0; i<50; i++){            //para lang mag-display ng loading keme
+        system("cls");
+        cout <<"\nPlease wait while we process this transaction...\n";
+    }
+    cout <<"\nPlease take your cash.\n";
+    system("pause");
+
+    if(ch==1){saveReceipt();}
+
+}
+
 void ATM:: saveReceipt(){
 fstream receiptFP;
-receiptFP.open("D:receipt.txt", ios::out);   //out kapag magpi-print sa file
+receiptFP.open("receipt.txt", ios::out);   //out kapag magpi-print sa file
 
     if(!receiptFP){
         cout <<"receipt.txt do not exist!\n";;
         system("pause");
     }
 
-    Date();
-
     receiptFP <<"\tTITLE NG BANK\n";
-    receiptFP <<dateTime;
+    Date();
+    receiptFP <<dateTime <<"\n\n";
     receiptFP <<"Transaction Type: " <<type <<"\n";
     receiptFP <<"Account Number: " <<p->accNum <<"\n";
     receiptFP <<"Account Balance: " <<p->balance <<"\n";
 
     if(option==4){
-        receiptFP <<"Amount transferred: " <<amount <<"\n";
-        receiptFP <<"Recipient: " <<"\n";
-
+        receiptFP <<"Amount: " <<amount <<"\n";
     }
 
-    receiptFP <<"\nThank you!";
+    if(option==5){
+        receiptFP <<"Recipient: " <<"\n";
+    }
+
+    cout <<"\nCheck your receipt in receipt.txt.\n";
+    system("pause");
+    receiptFP <<"\nThank you for banking with us!";
 
 receiptFP.close();
 }
@@ -292,7 +342,7 @@ char ch;
 
 void ATM:: saveRegistration(){
 fstream regFP;
-regFP.open("D:registration.txt", ios::out);   //out kapag magpi-print sa file
+regFP.open("registration.txt", ios::out);   //out kapag magpi-print sa file
 
     if(!regFP){
         cout <<"registration.txt do not exist!\n";;
@@ -307,7 +357,7 @@ regFP.open("D:registration.txt", ios::out);   //out kapag magpi-print sa file
 
 void ATM:: savePincode(){
 fstream pinFP;
-pinFP.open("D:\pincode.txt", ios::out);   //out kapag magpi-print sa file
+pinFP.open("pincode.txt", ios::out);   //out kapag magpi-print sa file
 
     pinFP <<pin <<"\n";
     pinFP <<accNum;
@@ -317,7 +367,7 @@ pinFP.open("D:\pincode.txt", ios::out);   //out kapag magpi-print sa file
 
 void ATM:: retrievePincode(){
 fstream pinFP;
-pinFP.open("D:\pincode.txt", ios::in);  //in kapag mag retrieve from file
+pinFP.open("pincode.txt", ios::in);  //in kapag mag retrieve from file
 
     if(!pinFP){
         cout <<"pincode.txt do not exist!\n";;
@@ -462,11 +512,8 @@ int ATM:: menu(){
 
 void Date() // 24 hr format
 {
-time_t ttime = time(0); // currrent time
-dateTime = ctime(&ttime); //ctime gagawin niya yung dateTime na string in weekday month date hours:minutes:seconds year.
+    time_t ttime = time(0); // currrent time
 
-tm *gmt_time = gmtime(&ttime); //Returns pointer to the tm structure in the Coordinated Universal Time (UTC) format which is essentially Greenwich Mean Time (GMT).
-//define na yung utc +8 para time zone ng philippines
-cout << dateTime << endl; //print dateTime
-dateTime = asctime(gmt_time); //print yung current time ng Philippines
+    (strftime(dateTime, sizeof(dateTime), "%a %B %d,%Y %I:%M:%S %p "  ,localtime(&ttime))); //strttime converts the date and time information from a given calendar time
+        //cout << dateTime << '\n';  // a = weekday  B= month, d= day, Y= year x= time in 2 hr format  p = am or pm in strftime
 }
