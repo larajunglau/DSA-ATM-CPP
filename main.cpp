@@ -67,8 +67,8 @@ int main()
         switch(atm.menu()){
             system("cls");
             case 1: system("cls"); atm.balInquiry(); break;
-            case 2: system("cls"); atm.withdrawal(); break;
-            case 8: system("cls"); atm.removeCard(); break;
+            case 2: system("cls"); atm.withdrawal(); exit(0); break;
+            case 8: system("cls"); atm.removeCard(); exit(0); break;
         }
     }
 
@@ -103,7 +103,7 @@ int ch, tries=0;
             savePincode();
             addAccount();
             saveAllAccounts();
-            removeCard(); system("pause");
+            removeCard();
 
         }
         //di pa nagana
@@ -168,7 +168,7 @@ int temp, ch, i;
         cout <<"\tWITHDRAWAL\n\n";
         cout <<"Enter amount: ";
         cin >> amount;
-        temp=(int) amount;  //store sa int varabiale ang amount para magamit modulo.
+        temp=(int) amount;          //store sa int varabiale ang amount para magamit modulo.
 
         if(temp %100!=0){
             cout <<"\nThis machine can only dispense 100, 500, and 1000 bills\n\n";
@@ -181,7 +181,7 @@ int temp, ch, i;
             system("pause");}
     }
 
-    p->balance-= amount;    //ima-iminus yung amount sa balance
+    p->balance-= amount;            //ima-iminus yung amount sa balance
     cout <<"\nDo you want a printed receipt?";
     cout <<"\n(1) YES" <<"\n(2) NO";
     cout <<"\nEnter your choice: ";
@@ -191,10 +191,12 @@ int temp, ch, i;
         system("cls");
         cout <<"\nPlease wait while we process this transaction...\n";
     }
-    cout <<"\nPlease take your cash.\n";
+    removeCard();                           //take ATM
+    cout <<"\nPlease take your cash.\n";    //take cash
     system("pause");
 
-    if(ch==1){saveReceipt();}
+    if(ch==1){saveReceipt();}               //take receipt
+    saveAllAccounts();
 
 }
 
@@ -212,15 +214,13 @@ receiptFP.open("receipt.txt", ios::out);   //out kapag magpi-print sa file
     receiptFP <<dateTime <<"\n\n";
     receiptFP <<"Transaction Type: " <<type <<"\n";
     receiptFP <<"Account Number: " <<p->accNum <<"\n";
-    receiptFP <<"Account Balance: " <<p->balance <<"\n";
-
-    if(option==4){
+    if(option==2 ||option==3 ||option==4 ){
         receiptFP <<"Amount: " <<amount <<"\n";
     }
-
     if(option==5){
         receiptFP <<"Recipient: " <<"\n";
     }
+    receiptFP <<"Account Balance: " <<p->balance <<"\n";
 
     cout <<"\nCheck your receipt in receipt.txt.\n";
     system("pause");
@@ -251,8 +251,8 @@ FILE *pinFP;
         pinFP=fopen("D:\pincode.txt","r");
     } while(pinFP!=NULL);
     fclose(pinFP);
-    printf("\nThank you for banking with MYLUGI BANK ");
-    exit(0);
+    cout <<"\nThank you for banking with us!\n";
+    system("pause");
 }
 
 void ATM:: registration(){
@@ -302,9 +302,10 @@ string initialPin;
     accNum= rand() %99999999 +10000000;
     system("cls");
     cout <<"\n\tYOUR ACCOUNT DETAILS\n";
-    cout <<"\nAccount number: " <<accNum <<"\nName: " <<regInfo.name <<"\nBalnce: " <<balance;
+    cout <<"\nAccount number: " <<accNum <<"\nName: " <<regInfo.name <<"\nBalance: " <<balance;
     cout <<"\n\nAccount successfully registered!";
     cout <<"\nAlways keep your account details.\n";
+    system("pause");
 }
 
 void ATM:: pincode(){       //ginagawa niyang asterisk yung PIN
@@ -410,8 +411,6 @@ ALLACC *p;
             allAccFP <<p->balance <<"\n\n";
             p=p->nxt;                           //usod sa next account
         }
-        cout <<"\nRecords saved successfully.\n";
-        system("pause");
     }
     allAccFP.close();
 }
