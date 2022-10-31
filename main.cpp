@@ -40,6 +40,7 @@ private:
     void saveReceipt();
     void decrypt();
     void findRecipient();
+    void askToExit();
 
 public:
     void retrieveAllAccounts();
@@ -172,6 +173,8 @@ int choice;
             saveReceipt();
             //bukas receipt.txt
         }
+
+        askToExit();
 }
 
 void ATM:: withdrawal(){
@@ -258,8 +261,7 @@ int temp, ch, i;
     if(ch==1){saveReceipt();}               //take receipt
     saveAllAccounts();
 
-    //ask kung pupunta sa menu or exit
-
+    askToExit();
 }
 
 void ATM:: fundTransfer(){
@@ -323,9 +325,25 @@ int temp, ch, i, recipient;
 
         if(ch==1){saveReceipt();}               //take receipt
         saveAllAccounts();
+        askToExit();
         }
 
     else{return;}
+
+}
+
+void ATM:: askToExit(){
+int ch;
+    system("cls");
+    cout <<"Do you want to do another transaction?";
+    cout <<"\n(1) YES";
+    cout <<"\n(2) EXIT";
+    cout <<"\n\n Enter your choice: ";
+    cin >> ch;
+    if(ch==1){
+        return;
+    }
+    else{removeCard(); exit(0);}
 
 }
 
