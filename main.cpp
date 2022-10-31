@@ -51,6 +51,7 @@ public:
     void removeCard();
     void withdrawal();
     void balInquiry();
+    void deposit();
     void fundTransfer();
     int menu();
 };
@@ -81,6 +82,7 @@ int main()
             system("cls");
             case 1: system("cls"); atm.balInquiry(); break;
             case 2: system("cls"); atm.withdrawal(); exit(0); break;
+            case 3: system("cls"); atm.deposit(); break;
             case 4: system("cls"); atm.fundTransfer(); break;
             case 8: system("cls"); atm.removeCard(); exit(0); break;
         }
@@ -216,6 +218,50 @@ int temp, ch, i;
 
 }
 
+void ATM:: deposit(){
+int temp, ch, i;
+
+    type= "Deposit";
+    cout <<"\tCASH DEPOSIT\n\n";
+    cout <<"This machine can only accept 100, 500, and 1000 bills\n\n";
+    system("pause");
+    while(temp %100!=0 || amount >= 50000){
+        system("cls");
+        cout <<"\tCASH DEPOSIT\n\n";
+        cout <<"Enter amount: ";
+        cin >> amount;
+        temp=(int) amount;          //store sa int varabiale ang amount para magamit modulo.
+
+        if(temp %100!=0){
+            cout <<"\nThis machine can only accept 100, 500, and 1000 bills\n\n";
+            system("pause");}
+        else if(amount > 50000){
+            cout <<"\nDeposits larger than P50,000 must be proccessed over the counter\n\n";
+            system("pause");}
+    }
+
+    cout <<"\nAmount deposited: " << amount;
+    p->balance+= amount;            //ipa-plus yung amount sa balance
+    cout <<"\n\nDo you want a printed receipt?";
+    cout <<"\n(1) YES" <<"\n(2) NO";
+    cout <<"\nEnter your choice: ";
+    cin >> ch;
+
+    for(i=0; i<50; i++){            //para lang mag-display ng loading keme
+        system("cls");
+        cout <<"\nPlease wait while we process this transaction...\n";
+    }
+
+    cout <<"\nPlease check your account balance.\n";    //take cash
+    system("pause");
+
+    if(ch==1){saveReceipt();}               //take receipt
+    saveAllAccounts();
+
+    //ask kung pupunta sa menu or exit
+
+}
+
 void ATM:: fundTransfer(){
 int temp, ch, i, recipient;
 
@@ -233,7 +279,7 @@ int temp, ch, i, recipient;
             system("pause");}
     }while(r==NULL);
 
-    while(temp %100!=0 || amount > (p->balance-500) || amount > 20000){
+    while(temp %100!=0 || amount >= (p->balance-500)){
         system("cls");
         cout <<"\tFUND TRANSFER\n\n";
         cout <<"Enter amount: ";
@@ -301,7 +347,7 @@ receiptFP.open("receipt.txt", ios::out);   //out kapag magpi-print sa file
         receiptFP <<"Amount: " <<std::setprecision(2) << std::fixed <<amount <<"\n";
     }
     if(option==4){
-        receiptFP <<"Recipient: " <<r->accNum <<"\n";
+        receiptFP <<"Recipient's account number: " <<r->accNum <<"\n";
     }
 
     receiptFP <<"Account Balance: " ;
