@@ -229,7 +229,8 @@ int temp, ch, i, recipient;
         cout<<"\nEnter recipient's Account number: ";
         cin >> accNum;
         findRecipient();
-        if(r==NULL){cout <<"\nAccount number does not exist.";}
+        if(r==NULL){cout <<"\nAccount number does not exist.\n";
+            system("pause");}
     }while(r==NULL);
 
     while(temp %100!=0 || amount > (p->balance-500) || amount > 20000){
@@ -249,18 +250,16 @@ int temp, ch, i, recipient;
 
     system("cls");
     cout <<"\tFUND TRANSFER\n\n";
-    cout <<"Transaction Type: " <<type <<"\n";
     cout <<"Your account number: " <<p->accNum <<"\n";
-    cout <<"Amount: " <<amount <<"\n";
     cout <<"Recipient's account number: " <<r->accNum <<"\n";
     cout <<"Recipient's name: " <<r->name <<"\n";
+    cout <<"Amount to transfer: " <<amount <<"\n";
     cout <<"\n(1) CONFIRM";
     cout <<"\n(2) BACK";
     cout <<"\n\nEnter your choice: ";
     cin >> ch;
 
-    if(ch==2){return;}
-    else{
+    if(ch==1){
         system("cls");
         p->balance-= amount;            //ima-iminus yung amount sa balance ni sender
         r->balance+= amount;                 //ia-add yung amount sa balance ni recipient
@@ -279,6 +278,8 @@ int temp, ch, i, recipient;
         if(ch==1){saveReceipt();}               //take receipt
         saveAllAccounts();
         }
+
+    else{return;}
 
 }
 
