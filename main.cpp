@@ -42,7 +42,6 @@ private:
     //void findAccount();
 
 public:
-    int accountNumber;
     void retrieveAllAccounts();
     void findAccount();
     void registration();
@@ -55,18 +54,14 @@ public:
     int menu();
 };
 
-class comma_numpunct : public std::numpunct<char>
+class comma_numpunct : public std::numpunct<char>   //para sa paglalagay ng comma sa balance
 {
   protected:
     virtual char do_thousands_sep() const
-    {
-        return ',';
-    }
+    {return ',';}
 
     virtual std::string do_grouping() const
-    {
-        return "\03";
-    }
+    {return "\03";}
 };
 
 void putComma();
@@ -88,7 +83,6 @@ int main()
             case 8: system("cls"); atm.removeCard(); exit(0); break;
         }
     }
-
 return 0;
 }
 
@@ -147,6 +141,7 @@ int ch, tries=0;
             removeCard();
             //balik sa homepage.
         }
+        retrievePincode(); //para before tawagin si findAccount, refreshed ang accNum.
     }
 }
 
@@ -197,6 +192,62 @@ int temp, ch, i;
             system("pause");}
         else if(amount > 20000){
             cout <<"\nAmount must not exceed P20,000";
+            system("pause");}
+    }
+
+    p->balance-= amount;            //ima-iminus yung amount sa balance
+    cout <<"\nDo you want a printed receipt?";
+    cout <<"\n(1) YES" <<"\n(2) NO";
+    cout <<"\nEnter your choice: ";
+    cin >> ch;
+
+    for(i=0; i<50; i++){            //para lang mag-display ng loading keme
+        system("cls");
+        cout <<"\nPlease wait while we process this transaction...\n";
+    }
+    removeCard();                           //take ATM
+    cout <<"\nPlease take your cash.\n";    //take cash
+    system("pause");
+
+    if(ch==1){saveReceipt();}               //take receipt
+    saveAllAccounts();
+
+}
+
+void ATM:: fundTransfer(){
+int temp, ch, i, recipient;
+ALLACC *sender;
+
+    type= "Fund Transfer";
+    cout <<"\tFUND TRANSFER\n\n";
+    //cout <<"This machine can only transfer 100, 500, and 1000 bills\n\n";
+    //system("pause");
+
+    while(p==NULL)
+        cout<<"\nEnter recipient's Account number: ";
+        cin >> accNum;
+        sender=p;           //salin kay sender ang value ng account niya
+        findAccount();      //hanapin ang account ni recipient at salin kay p.
+        //sender= node ni user. p= node ni recipient.
+        cout <<"Sender: " <<sender-name <<"recipient: " <<p->name;
+        system("pause");
+
+
+
+
+
+    while(temp %100!=0 || amount > (p->balance-500) || amount > 20000){
+        system("cls");
+        cout <<"\tWITHDRAWAL\n\n";
+        cout <<"Enter amount: ";
+        cin >> amount;
+        temp=(int) amount;          //store sa int varabiale ang amount para magamit modulo.
+
+        if(temp %100!=0){
+            cout <<"\nThis machine can only dispense 100, 500, and 1000 bills\n\n";
+            system("pause");}
+        else if(amount > (p->balance-500)){
+            cout <<"\nInsufficient balance!\n";
             system("pause");}
     }
 
@@ -408,7 +459,6 @@ void ATM:: findAccount(){           //hinahanap yung account info ng current use
 
     p=head;
 
-    retrievePincode();
     while(p!=NULL && p->accNum != accNum){
         p=p->nxt;
     }
@@ -543,6 +593,8 @@ void putComma(){
     std::cout.imbue(comma_locale);
     cout << std::setprecision(2) << std::fixed;
 }
+
+
 
 
 
