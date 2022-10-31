@@ -24,7 +24,7 @@ typedef struct regInfo{
 class ATM{
 private:
     REGINFO regInfo;
-    ALLACC *head, *n, *p;
+    ALLACC *head, *n, *p, *r;
     //int index;
     char pin[7];
     string type;
@@ -39,7 +39,7 @@ private:
     void saveAllAccounts();
     void saveReceipt();
     void decrypt();
-    //void findAccount();
+    void findRecipient();
 
 public:
     void retrieveAllAccounts();
@@ -51,6 +51,7 @@ public:
     void removeCard();
     void withdrawal();
     void balInquiry();
+    void fundTransfer();
     int menu();
 };
 
@@ -80,6 +81,7 @@ int main()
             system("cls");
             case 1: system("cls"); atm.balInquiry(); break;
             case 2: system("cls"); atm.withdrawal(); exit(0); break;
+            case 4: system("cls"); atm.fundTransfer(); break;
             case 8: system("cls"); atm.removeCard(); exit(0); break;
         }
     }
@@ -216,57 +218,67 @@ int temp, ch, i;
 
 void ATM:: fundTransfer(){
 int temp, ch, i, recipient;
-ALLACC *sender;
 
     type= "Fund Transfer";
     cout <<"\tFUND TRANSFER\n\n";
     //cout <<"This machine can only transfer 100, 500, and 1000 bills\n\n";
-    //system("pause");
 
-    while(p==NULL)
+    do{
+        system("cls");
+        cout <<"\tFUND TRANSFER\n\n";
         cout<<"\nEnter recipient's Account number: ";
         cin >> accNum;
-        sender=p;           //salin kay sender ang value ng account niya
-        findAccount();      //hanapin ang account ni recipient at salin kay p.
-        //sender= node ni user. p= node ni recipient.
-        cout <<"Sender: " <<sender-name <<"recipient: " <<p->name;
-        system("pause");
-
-
-
-
+        findRecipient();
+        if(r==NULL){cout <<"\nAccount number does not exist.";}
+    }while(r==NULL);
 
     while(temp %100!=0 || amount > (p->balance-500) || amount > 20000){
         system("cls");
-        cout <<"\tWITHDRAWAL\n\n";
+        cout <<"\tFUND TRANSFER\n\n";
         cout <<"Enter amount: ";
         cin >> amount;
         temp=(int) amount;          //store sa int varabiale ang amount para magamit modulo.
 
         if(temp %100!=0){
-            cout <<"\nThis machine can only dispense 100, 500, and 1000 bills\n\n";
+            cout <<"\nThis machine can only transfer 100, 500, and 1000 bills\n\n";
             system("pause");}
         else if(amount > (p->balance-500)){
             cout <<"\nInsufficient balance!\n";
             system("pause");}
     }
 
-    p->balance-= amount;            //ima-iminus yung amount sa balance
-    cout <<"\nDo you want a printed receipt?";
-    cout <<"\n(1) YES" <<"\n(2) NO";
-    cout <<"\nEnter your choice: ";
+    system("cls");
+    cout <<"\tFUND TRANSFER\n\n";
+    cout <<"Transaction Type: " <<type <<"\n";
+    cout <<"Your account number: " <<p->accNum <<"\n";
+    cout <<"Amount: " <<amount <<"\n";
+    cout <<"Recipient's account number: " <<r->accNum <<"\n";
+    cout <<"Recipient's name: " <<r->name <<"\n";
+    cout <<"\n(1) CONFIRM";
+    cout <<"\n(2) BACK";
+    cout <<"\n\nEnter your choice: ";
     cin >> ch;
 
-    for(i=0; i<50; i++){            //para lang mag-display ng loading keme
+    if(ch==2){return;}
+    else{
         system("cls");
-        cout <<"\nPlease wait while we process this transaction...\n";
-    }
-    removeCard();                           //take ATM
-    cout <<"\nPlease take your cash.\n";    //take cash
-    system("pause");
+        p->balance-= amount;            //ima-iminus yung amount sa balance ni sender
+        r->balance+= amount;                 //ia-add yung amount sa balance ni recipient
+        cout <<"\nDo you want a printed receipt?";
+        cout <<"\n(1) YES" <<"\n(2) NO";
+        cout <<"\nEnter your choice: ";
+        cin >> ch;
 
-    if(ch==1){saveReceipt();}               //take receipt
-    saveAllAccounts();
+        for(i=0; i<50; i++){            //para lang mag-display ng loading keme
+            system("cls");
+            cout <<"\nPlease wait while we process this transaction...\n";
+        }
+
+        cout <<"\nAmount transferred successfully.";
+
+        if(ch==1){saveReceipt();}               //take receipt
+        saveAllAccounts();
+        }
 
 }
 
@@ -287,11 +299,11 @@ receiptFP.open("receipt.txt", ios::out);   //out kapag magpi-print sa file
     if(option==2 ||option==3 ||option==4 ){
         receiptFP <<"Amount: " <<std::setprecision(2) << std::fixed <<amount <<"\n";
     }
-    if(option==5){
-        receiptFP <<"Recipient: " <<"\n";
+    if(option==4){
+        receiptFP <<"Recipient: " <<r->accNum <<"\n";
     }
 
-    receiptFP <<"Account Balance: ";
+    receiptFP <<"Account Balance: " ;
     receiptFP <<std::setprecision(2) << std::fixed <<p->balance <<"\n";
 
     cout <<"\nCheck your receipt in receipt.txt.\n";
@@ -461,6 +473,15 @@ void ATM:: findAccount(){           //hinahanap yung account info ng current use
 
     while(p!=NULL && p->accNum != accNum){
         p=p->nxt;
+    }
+}
+
+void ATM:: findRecipient(){           //hinahanap yung account info ng recipient
+
+    r=head;
+
+    while(r!=NULL && r->accNum != accNum){
+        r=r->nxt;
     }
 }
 
