@@ -16,6 +16,14 @@ typedef struct allAcc{
     struct allAcc *nxt;
 }ALLACC;
 
+typedef struct history{
+    char dateTime[100];
+    string type, recipient;
+    int accNum, amount;
+    float balance;
+    struct history *nxt;
+}HISTORY;
+
 typedef struct regInfo{
     string name, birthday, number;
     int age;
