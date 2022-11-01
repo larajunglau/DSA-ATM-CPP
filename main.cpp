@@ -17,7 +17,7 @@ typedef struct allAcc{
 }ALLACC;
 
 typedef struct history{
-    char dateTime[100];
+    string dateTime;
     string type, recipient;
     int accNum, amount;
     float balance;
@@ -81,6 +81,7 @@ class comma_numpunct : public std::numpunct<char>   //para sa paglalagay ng comm
 
 void putComma();
 void Date();
+string dt;
 char dateTime[100];
 //int head=NULL;
 int main()
@@ -88,9 +89,9 @@ int main()
     ATM atm;
     atm.makeNull();
     atm.retrieveAllAccounts();
-    atm.retrieveHistory();
     atm.insertCard();
     atm.findAccount();
+    //atm.retrieveHistory(); //nag-error siya after 2 history
     while(1){
         switch(atm.menu()){
             system("cls");
@@ -174,7 +175,7 @@ int choice;
     cin>> choice;
         if(choice==1){
             system("cls");
-            cout <<"Date: "; Date(); cout <<dateTime <<"\n\n";
+            cout <<"Date: "; Date(); cout <<dt <<"\n\n";
             cout <<"Transcaction Type: " <<type <<"\n" ;
             cout <<"Account Number: " << p->accNum <<"\n" ;
             cout <<"Account Balance: ";
@@ -381,7 +382,7 @@ receiptFP.open("receipt.txt", ios::out);   //out kapag magpi-print sa file
 
     receiptFP <<"\tTITLE NG BANK\n";
     Date();
-    receiptFP <<dateTime <<"\n\n";
+    receiptFP <<dt <<"\n\n";
     receiptFP <<"Transaction Type: " <<type <<"\n";
     receiptFP <<"Account Number: " <<p->accNum <<"\n";
     if(option==2 ||option==3 ||option==4 ){
@@ -652,7 +653,7 @@ void ATM:: addHistory(){    //sine-save yung recent transaction sa history linke
 HISTORY *n;
 
     n= new HISTORY; //allocates memory to n
-    strcpy(n->dateTime, dateTime);
+    n->dateTime= dt;
     n->type=type; n->accNum=p->accNum; n->amount=amount;
     n->recipient=recipient; n->balance=p->balance;
     n->nxt=headH;    //value ng head ay ilagay sa second node
@@ -691,8 +692,7 @@ historyFP.open("history.txt", ios::in);
 
     else{
         while(1){
-            //getline(historyFP, dateTime);
-            getline(historyFP, dateTime);
+            getline(historyFP, dt);
             historyFP >>type; historyFP >>accNum;
             historyFP >>amount;
             historyFP.ignore();                 //flushes the file
@@ -756,6 +756,7 @@ void Date() // 24 hr format
 
     (strftime(dateTime, sizeof(dateTime), "%a %B %d,%Y %I:%M:%S %p "  ,localtime(&ttime))); //strttime converts the date and time information from a given calendar time
         //cout << dateTime << '\n';  // a = weekday  B= month, d= day, Y= year x= time in 2 hr format  p = am or pm in strftime
+    dt=dateTime;
 }
 
 void putComma(){
