@@ -33,9 +33,10 @@ class ATM{
 private:
     REGINFO regInfo;
     ALLACC *head, *n, *p, *r;
+    HISTORY *headH;
     //int index;
     char pin[7];
-    string type;
+    string type, recipient;
     float amount, balance;
     int accNum, option;
     void saveRegistration();
@@ -43,8 +44,10 @@ private:
     void savePincode();
     void retrievePincode();
     void addAccount();
+    void addHistory();
     void addRetrieve();
     void saveAllAccounts();
+    void saveHistory();
     void saveReceipt();
     void decrypt();
     void findRecipient();
@@ -52,6 +55,7 @@ private:
 
 public:
     void retrieveAllAccounts();
+    void retrieveHistory();
     void findAccount();
     void registration();
     void pincode();
@@ -84,6 +88,7 @@ int main()
     ATM atm;
     atm.makeNull();
     atm.retrieveAllAccounts();
+    atm.retrieveHistory();
     atm.insertCard();
     atm.findAccount();
     while(1){
@@ -211,6 +216,7 @@ int temp, ch, i;
     }
 
     p->balance-= amount;            //ima-iminus yung amount sa balance
+    recipient="N/A";
     cout <<"\nDo you want a printed receipt?";
     cout <<"\n(1) YES" <<"\n(2) NO";
     cout <<"\nEnter your choice: ";
@@ -220,12 +226,15 @@ int temp, ch, i;
         system("cls");
         cout <<"\nPlease wait while we process this transaction...\n";
     }
+
     removeCard();                           //take ATM
     cout <<"\nPlease take your cash.\n";    //take cash
     system("pause");
 
     if(ch==1){saveReceipt();}               //take receipt
     saveAllAccounts();
+    addHistory();
+    saveHistory();
 
 }
 
@@ -253,6 +262,7 @@ int temp, ch, i;
 
     cout <<"\nAmount deposited: " << amount;
     p->balance+= amount;            //ipa-plus yung amount sa balance
+    recipient="N/A";
     cout <<"\n\nDo you want a printed receipt?";
     cout <<"\n(1) YES" <<"\n(2) NO";
     cout <<"\nEnter your choice: ";
@@ -268,12 +278,14 @@ int temp, ch, i;
 
     if(ch==1){saveReceipt();}               //take receipt
     saveAllAccounts();
+    addHistory();
+    saveHistory();
 
     askToExit();
 }
 
 void ATM:: fundTransfer(){
-int temp, ch, i, recipient;
+int temp, ch, i;
 
     type= "Fund Transfer";
     cout <<"\tFUND TRANSFER\n\n";
@@ -333,6 +345,9 @@ int temp, ch, i, recipient;
 
         if(ch==1){saveReceipt();}               //take receipt
         saveAllAccounts();
+        recipient=r->name;
+        addHistory();
+        saveHistory();
         askToExit();
         }
 
@@ -623,7 +638,6 @@ ALLACC *q, *p, *n;
         q=p;
         p=p->nxt;
     }
-    cout <<"while";
 
     if(p==head){ //If wala pang laman
         head=n;
@@ -633,6 +647,67 @@ ALLACC *q, *p, *n;
     n->nxt=p; //lagay NULL sa dulo which is p.
 
 }
+
+void ATM:: addHistory(){    //sine-save yung recent transaction sa history linkedlist
+HISTORY *n;
+
+    n= new HISTORY; //allocates memory to n
+    strcpy(n->dateTime, dateTime);
+    n->type=type; n->accNum=p->accNum; n->amount=amount;
+    n->recipient=recipient; n->balance=p->balance;
+    n->nxt=headH;    //value ng head ay ilagay sa second node
+    headH=n;         //value ng n ay ilagay sa head
+}
+
+void ATM::saveHistory(){        //pini-print sa text file ang lahat ng accounts
+fstream historyFP;
+historyFP.open("history.txt", ios::out);
+
+HISTORY *p;
+
+    p=headH;
+    if(!historyFP){
+        cout <<"history.txt do not exist!\n";;
+        system("pause");
+    }
+    else{
+        while(p!=NULL){                         //hanggat di pa dulo
+            historyFP <<p->dateTime <<"\n" <<p->type <<"\n" <<p->accNum <<"\n";
+            historyFP <<p->amount <<"\n" <<p->recipient <<"\n" <<p->balance <<"\n\n";
+            p=p->nxt;                           //usod sa next account
+        }
+    }
+    historyFP.close();
+}
+
+void ATM::retrieveHistory(){            //kukunin yung mga accounts mula sa allAccounts.txt at isasalin sa linkedlist
+fstream historyFP;
+historyFP.open("history.txt", ios::in);
+
+    if(!historyFP){
+        cout<< "File error!\n";
+        system("pause");
+    }
+
+    else{
+        while(1){
+            //getline(historyFP, dateTime);
+            getline(historyFP, dateTime);
+            historyFP >>type; historyFP >>accNum;
+            historyFP >>amount;
+            historyFP.ignore();                 //flushes the file
+            getline(historyFP, recipient);
+            historyFP >>balance;
+
+            if(!historyFP.eof()){
+                addHistory();
+            }
+            else{break;}
+        }
+    }
+    historyFP.close();
+}
+
 
 void ATM:: encrypt(){
 
@@ -655,6 +730,7 @@ int i=0;
 
 void ATM::makeNull(){
     head=NULL;
+    headH=NULL;
 }
 
 int ATM:: menu(){
