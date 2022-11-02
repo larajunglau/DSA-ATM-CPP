@@ -108,13 +108,11 @@ int choice;
                 cout <<"\nOTHER TRANSACTIONS\n";
                 cout <<"\n(1) Transaction History";
                 cout <<"\n(2) Change PIN";
-                cout <<"\n(3) Update Personal information";
                 cout <<"\n\nEnter choice: ";
                 cin >>choice;
                 switch(choice){
                     case 1: system("cls"); atm.displayHistory(); break;
                     case 2: system("cls"); atm.changePin(); break;
-                    case 3: system("cls"); break;
                 }
 
                 break;
@@ -216,7 +214,7 @@ int temp, ch, i;
 
     type= "Withdrawal";
     cout <<"\tWITHDRAWAL\n\n";
-    cout <<"This machine can only dispense 100, 500, and 1000 bills\n\n";
+    cout <<"This machine can only dispense 100, 200, 500, and 1000 bills\n\n";
     system("pause");
     while(temp %100!=0 || amount > (p->balance-500) || amount > 20000){
         system("cls");
@@ -261,48 +259,69 @@ int temp, ch, i;
 
 void ATM:: deposit(){
 int temp, ch, i;
+int thou, fivehun, twohun, onehun;
 
     type= "Deposit";
     cout <<"\tCASH DEPOSIT\n\n";
-    cout <<"This machine can only accept 100, 500, and 1000 bills\n\n";
+    cout <<"This machine can only accept 100, 200, 500, and 1000 bills\n\n";
     system("pause");
-    while(temp %100!=0 || amount >= 50000){
+
         system("cls");
         cout <<"\tCASH DEPOSIT\n\n";
-        cout <<"Enter amount: ";
-        cin >> amount;
-        temp=(int) amount;          //store sa int varabiale ang amount para magamit modulo.
+        cout <<"\nEnter number of pieces of your P1,000 bills: ";
+        cin >>thou;
+        cout <<"\nEnter number of pieces of your P500 bills: ";
+        cin >>fivehun;
+        cout <<"\nEnter number of pieces of your P200 bills: ";
+        cin >>twohun;
+        cout <<"\nEnter number of pieces of your P100 bills: ";
+        cin >>onehun;
+        amount=( (1000*thou)+(500*fivehun)+(200*twohun)+(100*onehun));
 
-        if(temp %100!=0){
-            cout <<"\nThis machine can only accept 100, 500, and 1000 bills\n\n";
-            system("pause");}
-        else if(amount > 50000){
-            cout <<"\nDeposits larger than P50,000 must be proccessed over the counter\n\n";
-            system("pause");}
-    }
-
-    cout <<"\nAmount deposited: " << amount;
-    p->balance+= amount;            //ipa-plus yung amount sa balance
-    recipient="N/A";
-    cout <<"\n\nDo you want a printed receipt?";
-    cout <<"\n(1) YES" <<"\n(2) NO";
-    cout <<"\nEnter your choice: ";
-    cin >> ch;
-
-    for(i=0; i<50; i++){            //para lang mag-display ng loading keme
         system("cls");
-        cout <<"\nPlease wait while we process this transaction...\n";
-    }
+        cout <<"AMOUNT DENOMINATION\n";
+        cout <<"\n1,000 x " <<thou <<" = " <<1000*thou;
+        cout <<"\n500 x " <<fivehun <<" = " <<500*fivehun;
+        cout <<"\n200 x " <<twohun <<" = " <<200*twohun;
+        cout <<"\n100 x " <<onehun <<" = " <<100*onehun;
+        cout <<"\n______________________________________";
+        cout <<"\nTOTAL AMOUNT: " <<amount;
 
-    cout <<"\nPlease check your account balance.\n";    //take cash
-    system("pause");
+        if(amount > 50000){
+            cout <<"\nDeposit amounts larger than P50,000 must be proccessed over the counter\n\n";
+            system("pause");
+            deposit();}
 
-    if(ch==1){saveReceipt();}               //take receipt
-    saveAllAccounts();
-    addHistory();
-    saveHistory();
+        cout <<"\n\n(1) CONFIRM";
+        cout <<"\n(2) BACK";
+        cout <<"\nEnter your choice: ";
+        cin >>ch;
+        if(ch==2){system("cls"); deposit();}
+        else{
+            system("cls");
+            cout <<"\nAmount deposited: " << amount;
+            p->balance+= amount;            //ipa-plus yung amount sa balance
+            recipient="N/A";
+            cout <<"\n\nDo you want a printed receipt?";
+            cout <<"\n(1) YES" <<"\n(2) NO";
+            cout <<"\nEnter your choice: ";
+            cin >> ch;
 
-    askToExit();
+            for(i=0; i<50; i++){            //para lang mag-display ng loading keme
+                system("cls");
+                cout <<"\nPlease wait while we process this transaction...\n";
+            }
+
+            cout <<"\nPlease check your account balance.\n";    //take cash
+            system("pause");
+
+            if(ch==1){saveReceipt();}               //take receipt
+            saveAllAccounts();
+            addHistory();
+            saveHistory();
+            askToExit();
+        }
+
 }
 
 void ATM:: fundTransfer(){
