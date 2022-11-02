@@ -66,6 +66,8 @@ public:
     void balInquiry();
     void deposit();
     void fundTransfer();
+    void changePin();
+    void displayHistory();
     int menu();
 };
 
@@ -99,6 +101,8 @@ int main()
             case 2: system("cls"); atm.withdrawal(); exit(0); break;
             case 3: system("cls"); atm.deposit(); break;
             case 4: system("cls"); atm.fundTransfer(); break;
+            case 5: system("cls"); atm.changePin(); break;
+            case 6: system("cls"); atm.displayHistory(); break;
             case 8: system("cls"); atm.removeCard(); exit(0); break;
         }
     }
@@ -355,6 +359,71 @@ int temp, ch, i;
     else{return;}
 
 }
+
+void ATM:: changePin(){                    //
+    string pinEntered,newPin,reEnterPin;
+    int tries=0;
+
+    cout<< "\tCHANGE PINCODE\n\n";
+    while(pinEntered!=pin && tries<3){     //hanggat di equal ang pinentered sa pin di pa less than 3 tries
+            system("cls");
+            cout<< "\t ENTER CURRENT PIN CODE TO CHANGE PINCODE\n\n";
+            cout<<"\nEnter your current PIN: ";
+            pincode();
+            pinEntered=pin;
+            retrievePincode();
+            decrypt();
+            if(pinEntered!=pin){
+                 cout <<"\nIncorrect PIN!\n";
+                 tries++;
+                 system("pause");                       //madadagdagan ang number of tries
+            }
+            if(tries==3){       //kapag na-block na
+            cout <<"\nYour account was blocked!\n"; system("pause");
+             removeCard();exit(0);
+            //balik sa homepage.
+            }
+    }
+            do{
+                system("cls");     //gagawin ito hanggat hindi equal yung newPin at reEnterPin
+                cout<< "\tCHANGE PINCODE\n";
+                cout<<"\n\nEnter your new 6-digit PIN: "; // enter new pin
+                pincode();
+                newPin=pin; //inistore yung pin sa variable newPin
+
+                cout<<"\nRe-enter new 6-digit PIN: "; //re- enter pin
+                pincode();
+                reEnterPin=pin; //inistore yung pin sa variable reEnterPin
+                }while(newPin!=reEnterPin);
+
+             if(pin==newPin){
+                        encrypt();
+                        savePincode();
+                        cout<<"\n\nPin code has been successfully changed.\n";
+                        system("pause");
+                        askToExit();
+    }
+}
+
+void ATM::displayHistory(){
+HISTORY *p;
+int i=1;
+
+    p=headH;
+    cout <<"\tTRANSACTION HISTORY\n\n";
+    while(p!=NULL){
+        cout <<p->dateTime <<"\n";
+        cout <<p->type <<"\n";
+        cout <<"Your account number: " <<p->accNum <<"\n";
+        cout <<"amount: " <<p->amount <<"\n";
+        cout <<"recipient: " <<p->recipient <<"\n";
+        cout <<"balance: " <<p->balance <<"\n";
+        p=p->nxt;
+    }
+    system("pause");
+}
+
+
 
 void ATM:: askToExit(){
 int ch;
@@ -657,7 +726,8 @@ HISTORY *n;
     n->type=type; n->accNum=p->accNum; n->amount=amount;
     n->recipient=recipient; n->balance=p->balance;
     n->nxt=headH;    //value ng head ay ilagay sa second node
-    headH=n;         //value ng n ay ilagay sa head
+    headH=n;         //value ng n ay ilagay sa headH
+
 }
 
 void ATM::saveHistory(){        //pini-print sa text file ang lahat ng accounts
@@ -674,7 +744,7 @@ HISTORY *p;
     else{
         while(p!=NULL){                         //hanggat di pa dulo
             historyFP <<p->dateTime <<"\n" <<p->type <<"\n" <<p->accNum <<"\n";
-            historyFP <<p->amount <<"\n" <<p->recipient <<"\n" <<p->balance <<"\n\n";
+            historyFP <<p->amount <<"\n" <<p->recipient <<"\n" <<p->balance <<"\n" <<endl;
             p=p->nxt;                           //usod sa next account
         }
     }
@@ -693,14 +763,16 @@ historyFP.open("history.txt", ios::in);
     else{
         while(1){
             getline(historyFP, dt);
-            historyFP >>type; historyFP >>accNum;
+            historyFP >>type;
+            historyFP >>accNum;
             historyFP >>amount;
-            historyFP.ignore();                 //flushes the file
-            getline(historyFP, recipient);
+            historyFP >>recipient;
             historyFP >>balance;
 
             if(!historyFP.eof()){
                 addHistory();
+                cout <<"ABOT SA ADDHISTORY";
+                system("pause");
             }
             else{break;}
         }
