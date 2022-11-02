@@ -89,6 +89,8 @@ char dateTime[100];
 //int head=NULL;
 int main()
 {
+int choice;
+
     ATM atm;
     atm.makeNull();
     atm.retrieveAllAccounts();
@@ -102,9 +104,22 @@ int main()
             case 2: system("cls"); atm.withdrawal(); exit(0); break;
             case 3: system("cls"); atm.deposit(); break;
             case 4: system("cls"); atm.fundTransfer(); break;
-            case 5: system("cls"); atm.changePin(); break;
-            case 6: system("cls"); atm.displayHistory(); break;
-            case 8: system("cls"); atm.removeCard(); exit(0); break;
+            case 5: system("cls");
+                cout <<"\nOTHER TRANSACTIONS\n";
+                cout <<"\n(1) Transaction History";
+                cout <<"\n(2) Change PIN";
+                cout <<"\n(3) Update Personal information";
+                cout <<"\n\nEnter choice: ";
+                cin >>choice;
+                switch(choice){
+                    case 1: system("cls"); atm.displayHistory(); break;
+                    case 2: system("cls"); atm.changePin(); break;
+                    case 3: system("cls"); break;
+                }
+
+                break;
+
+            case 6: system("cls"); atm.removeCard(); exit(0); break;
         }
     }
 return 0;
@@ -406,6 +421,7 @@ void ATM:: changePin(){                    //
     }
 }
 
+
 void ATM::displayHistory(){
 HISTORY *p;
 int i=1;
@@ -414,7 +430,7 @@ int i=1;
     cout <<"\tTRANSACTION HISTORY\n\n";
     while(p!=NULL){
         cout <<p->dateTime <<"\n";
-        cout <<p->type <<"\n";
+        cout <<"Transaction type: " <<p->type <<"\n";
         cout <<"Your account number: " <<p->accNum <<"\n";
         cout <<"amount: " <<p->amount <<"\n";
         cout <<"recipient: " <<p->recipient <<"\n";
@@ -774,7 +790,7 @@ HISTORY *p;
     historyFP.close();
 }
 
-void ATM::retrieveHistory(){            //kukunin yung mga accounts mula sa allAccounts.txt at isasalin sa linkedlist
+void ATM::retrieveHistory(){            //kukunin yung mga history mula sa history.txt at isasalin sa linkedlist
 fstream historyFP;
 historyFP.open("history.txt", ios::in);
 
@@ -785,7 +801,6 @@ historyFP.open("history.txt", ios::in);
 
     else{
         while(1){
-
             getline(historyFP, dt);
             historyFP >>type;
             historyFP >>accNum;
@@ -803,36 +818,6 @@ historyFP.open("history.txt", ios::in);
     }
     historyFP.close();
 }
-
-/*void ATM::retrieveHistory(){            //kukunin yung mga accounts mula sa allAccounts.txt at isasalin sa linkedlist
-fstream historyFP;
-historyFP.open("history.txt", ios::in);
-
-    if(!historyFP){
-        cout<< "File error!\n";
-        system("pause");
-    }
-
-    else{
-        while(1){
-            getline(historyFP, dt);
-            historyFP >>type;
-            historyFP >>accNum;
-            historyFP >>amount;
-            historyFP >>recipient;
-            historyFP >>balance;
-
-            if(!historyFP.eof()){
-                addHistory();
-                cout <<"ABOT SA ADDHISTORY";
-                system("pause");
-            }
-            else{break;}
-        }
-    }
-    historyFP.close();
-}*/
-
 
 void ATM:: encrypt(){
 
@@ -866,13 +851,15 @@ int ATM:: menu(){
     cout <<"2. Withdrawal\n";
     cout <<"3. Deposit\n";
     cout <<"4. Fund Transfer\n";
-    cout <<"5. Change Pincode\n";
-    cout <<"6. Transaction History\n";
-    cout <<"7. Other Transactions\n";
-    cout <<"8. Exit\n";
-    cout <<"Enter option (1-8): ";
+    cout <<"5. Other Transactions\n";
+    cout <<"6. Exit\n";
+    cout <<"Enter option (1-6): ";
     cin >> option;
     return option;
+    if(option > 6 || option <1){
+        cout <<"\nInvalid option\n!";
+        system("pause");
+    }
 }
 
 void Date() // 24 hr format
