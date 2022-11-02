@@ -45,6 +45,7 @@ private:
     void retrievePincode();
     void addAccount();
     void addHistory();
+    void addRetrievedHistory();
     void addRetrieve();
     void saveAllAccounts();
     void saveHistory();
@@ -93,7 +94,7 @@ int main()
     atm.retrieveAllAccounts();
     atm.insertCard();
     atm.findAccount();
-    //atm.retrieveHistory(); //nag-error siya after 2 history
+    atm.retrieveHistory(); //nag-error siya after 2 history
     while(1){
         switch(atm.menu()){
             system("cls");
@@ -417,7 +418,7 @@ int i=1;
         cout <<"Your account number: " <<p->accNum <<"\n";
         cout <<"amount: " <<p->amount <<"\n";
         cout <<"recipient: " <<p->recipient <<"\n";
-        cout <<"balance: " <<p->balance <<"\n";
+        cout <<"balance: " <<p->balance <<"\n\n";
         p=p->nxt;
     }
     system("pause");
@@ -730,6 +731,28 @@ HISTORY *n;
 
 }
 
+void ATM:: addRetrievedHistory(){   //sine-save yung lahat ng accounts mulsa sa file sa LinkedList
+HISTORY *q, *p, *n;
+
+    n= new HISTORY; //allocates memory to n
+    n->dateTime=dt; n->type=type; n->accNum=accNum; n->amount= amount;
+    n->recipient= recipient; n->balance=balance;
+
+    p=q=headH; //set lahat sa head
+    while(p!=NULL){
+        q=p;
+        p=p->nxt;
+    }
+
+    if(p==headH){ //If wala pang laman
+        headH=n;
+    }
+    else{q->nxt=n;} //if may laman na
+
+    n->nxt=p; //lagay NULL sa dulo which is p.
+
+}
+
 void ATM::saveHistory(){        //pini-print sa text file ang lahat ng accounts
 fstream historyFP;
 historyFP.open("history.txt", ios::out);
@@ -762,6 +785,36 @@ historyFP.open("history.txt", ios::in);
 
     else{
         while(1){
+
+            getline(historyFP, dt);
+            historyFP >>type;
+            historyFP >>accNum;
+            historyFP >>amount;
+            historyFP >>recipient;
+            historyFP >>balance;
+
+            historyFP.ignore();
+            if(!historyFP.eof()){
+                addRetrievedHistory();
+                historyFP.ignore();
+            }
+            else{break;}
+        }
+    }
+    historyFP.close();
+}
+
+/*void ATM::retrieveHistory(){            //kukunin yung mga accounts mula sa allAccounts.txt at isasalin sa linkedlist
+fstream historyFP;
+historyFP.open("history.txt", ios::in);
+
+    if(!historyFP){
+        cout<< "File error!\n";
+        system("pause");
+    }
+
+    else{
+        while(1){
             getline(historyFP, dt);
             historyFP >>type;
             historyFP >>accNum;
@@ -778,7 +831,7 @@ historyFP.open("history.txt", ios::in);
         }
     }
     historyFP.close();
-}
+}*/
 
 
 void ATM:: encrypt(){
@@ -814,7 +867,7 @@ int ATM:: menu(){
     cout <<"3. Deposit\n";
     cout <<"4. Fund Transfer\n";
     cout <<"5. Change Pincode\n";
-    cout <<"6. Transfer history\n";
+    cout <<"6. Transaction History\n";
     cout <<"7. Other Transactions\n";
     cout <<"8. Exit\n";
     cout <<"Enter option (1-8): ";
