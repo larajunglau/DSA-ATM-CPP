@@ -71,6 +71,7 @@ public:
     void fundTransfer();
     void changePin();
     void displayHistory();
+    void askPin();
     int menu();
 };
 
@@ -104,11 +105,11 @@ int choice;
     while(1){
         switch(atm.menu()){
             system("cls");
-            case 1: system("cls"); atm.balInquiry(); break;
+            case 1: system("cls"); atm.askPin(); system("cls"); atm.balInquiry(); break;
             case 2: system("cls"); atm.withdrawal(); exit(0); break;
-            case 3: system("cls"); atm.deposit(); break;
-            case 4: system("cls"); atm.fundTransfer(); break;
-            case 5: system("cls");
+            case 3: system("cls"); atm.askPin(); system("cls"); atm.deposit(); break;
+            case 4: system("cls"); atm.askPin(); system("cls"); atm.fundTransfer(); break;
+            case 5: system("cls"); atm.askPin(); system("cls");
                 cout <<"\nOTHER TRANSACTIONS\n";
                 cout <<"\n(1) Transaction History";
                 cout <<"\n(2) Change PIN";
@@ -131,8 +132,8 @@ return 0;
 
 void ATM:: insertCard(){                        //dinede-tect niya kung registered na ang card
 fstream pinFP;                                  //tsaka sinasabi kay user na mag-insert na ng card
-string c, enteredPin;
-int ch, tries=0;
+string c;
+int ch;
 
     do{system("cls");                           //hanggang di pa na-insert card, sasabihin na i-insert na.
         cout <<"\tBANK\n\n";
@@ -164,24 +165,7 @@ int ch, tries=0;
     }
 
     else{                                        //kung may laman na or registered na card
-        while(enteredPin!=pin && tries<3){       //hanggang di pa correct pin at di pa blocked
-            system("cls");
-            cout <<"\nEnter 6-digit pin: ";
-            pincode();
-            enteredPin=pin;
-            retrievePincode();
-            decrypt();
-            if(enteredPin!=pin){                 //kapag mali ang pin
-                cout <<"\nIncorrect pin!\n";
-                tries++; system("pause");        //madadagdagan ang number of tries
-            }
-        }
-
-        if(tries==3){                              //kapag na-block na
-            cout <<"\nYour account was blocked!";
-            removeCard(); exit(0);
-                                                //balik sa homepage.
-        }
+        askPin();
         retrievePincode();                      //para before tawagin si findAccount, refreshed ang accNum.
     }
 }
@@ -237,6 +221,7 @@ int temp, ch, i;
             cout <<"\nAmount must not exceed P20,000";
             system("pause");}
     }
+    system("cls"); askPin(); system("cls");
 
     p->balance-= amount;            //ima-iminus yung amount sa balance
     recipient="N/A";
@@ -820,6 +805,7 @@ historyFP.open("history.txt", ios::in);
             historyFP >>amount;
             historyFP.ignore();
             getline(historyFP, recipient);
+
             historyFP >>balance;
 
             historyFP.ignore();
@@ -849,6 +835,30 @@ int i=0;
     while(pin[i]!='\0'){                                    //habang di pa NULL
         pin[i]=pin[i] - 123;                                //minus code each character
         i++;
+    }
+}
+
+void ATM:: askPin(){
+int tries=0;
+string enteredPin;
+
+    while(enteredPin!=pin && tries<3){       //hanggang di pa correct pin at di pa blocked
+        system("cls");
+        cout <<"\nEnter 6-digit pin: ";
+        pincode();
+        enteredPin=pin;
+        retrievePincode();
+        decrypt();
+        if(enteredPin!=pin){                 //kapag mali ang pin
+            cout <<"\nIncorrect pin!\n";
+            tries++; system("pause");        //madadagdagan ang number of tries
+        }
+    }
+
+    if(tries==3){                              //kapag na-block na
+        cout <<"\nYour account was blocked!";
+        removeCard(); exit(0);
+                                            //balik sa homepage.
     }
 }
 
