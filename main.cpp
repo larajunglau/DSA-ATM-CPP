@@ -11,16 +11,16 @@
 using namespace std;
 
 typedef struct allAcc{
-    string name;
-    int accNum, chR;
+    string name, accNum;
+    int chR;
     float balance;
     struct allAcc *nxt;
 }ALLACC;
 
 typedef struct history{
     string dateTime;
-    string type, recipient;
-    int accNum, amount;
+    string type, accNum, recipient;
+    int amount;
     float balance;
     struct history *nxt;
 }HISTORY;
@@ -37,9 +37,9 @@ private:
     HISTORY *headH;
     //int index;
     char pin[7];
-    string type, recipient;
+    string type, accNum, recipient;
     float amount, balance;
-    int accNum, option;
+    int option;
     void saveRegistration();
     void encrypt();
     void savePincode();
@@ -97,11 +97,11 @@ int choice;
     ATM atm;
     atm.makeNull();
     atm.retrieveAllAccounts();
+    putComma();                                                 //adds comma and decimal to money displays
     atm.insertCard();
     atm.findAccount();
     atm.retrieveHistory();
     while(1){
-        putComma();                                                 //adds comma and decimal to money
         switch(atm.menu()){
             system("cls");
             case 1: system("cls"); atm.balInquiry(); break;
@@ -188,7 +188,6 @@ int ch, tries=0;
 
 void ATM:: balInquiry(){
 int choice;
-string accNumS= to_string(p->accNum);
 
     type ="Balance Inquiry";
     cout <<"\tBALANCE INQUIRY";
@@ -200,7 +199,7 @@ string accNumS= to_string(p->accNum);
             system("cls");
             cout <<"Date: "; Date(); cout <<dt <<"\n\n";
             cout <<"Transaction Type: " <<type <<"\n" ;
-            cout <<"Account Number: " << accNumS <<"\n" ;
+            cout <<"Account Number: " << p->accNum <<"\n" ;
             cout <<"Account Balance: ";
             cout << p->balance <<"\n";
             system("pause");
@@ -305,7 +304,7 @@ float thou, fivehun, twohun, onehun;
     if(ch==2){system("cls"); deposit();}
     else{
         system("cls");
-        cout <<"\nAmout of " << amount <<" was successfully deposited to your account.\n" <<endl; system("pause");
+        cout <<"\nAmout of " << amount <<" will be deposited to your account.\n" <<endl; system("pause");
         p->balance+= amount;                                //ipa-plus yung amount sa balance
         recipient="N/A";
         askReceipt();
@@ -315,8 +314,8 @@ float thou, fivehun, twohun, onehun;
             cout <<"\nPlease wait while we process this transaction...\n";
         }
 
-        cout <<"\nPlease check your account balance.\n";    //take cash
-        system("pause");
+        cout <<"\nFunds transferred successfully.\n";  system("pause");
+        cout <<"\nPlease check your account balance.\n"; system("pause"); //take cash
 
         Date();
         if(chR==1){saveReceipt();}                          //take receipt
@@ -342,7 +341,7 @@ int temp, ch, i;
             system("pause");}
     }while(r==NULL);
 
-    while(temp %100!=0 || amount >= (p->balance-500)){
+    while(temp %100!=0 || amount > (p->balance-500)){
         system("cls");
         cout <<"\tFUND TRANSFER\n\n";
         cout<<"\nEnter recipient's Account number: " <<accNum;
@@ -449,13 +448,12 @@ void ATM::displayHistory(){
 HISTORY *p;
 int i=1;
 
-    string accNumS= to_string(p->accNum);                            //converts int to string para di masama sa malalagyan ng comma
     p=headH;
     cout <<"\tTRANSACTION HISTORY\n\n";
     while(p!=NULL){
         cout <<p->dateTime <<"\n";
         cout <<"Transaction type: " <<p->type <<"\n";
-        cout <<"Your account number: " <<accNumS <<"\n";
+        cout <<"Your account number: " <<p->accNum <<"\n";
         cout <<"Amount: " <<p->amount <<"\n";
         cout <<"Recipient: " <<p->recipient <<"\n";
         cout <<"Balance: " <<p->balance <<"\n\n";
@@ -534,6 +532,7 @@ FILE *pinFP;
 
 void ATM:: registration(){
 string initialPin;
+int intAccNum;
 
     //*Lagay statement of agreement
     cout <<"\tREGISTRATION\n";
@@ -571,7 +570,8 @@ string initialPin;
 
     balance= amount;
     srand(time(NULL));
-    accNum= rand() %99999999 +10000000;
+    intAccNum= rand() %99999999 +10000000;
+    accNum= to_string(intAccNum);
     system("cls");
     cout <<"\n\tYOUR ACCOUNT DETAILS\n";
     cout <<"\nAccount number: " <<accNum <<"\nName: " <<regInfo.name <<"\nBalance: " <<balance;
@@ -815,10 +815,11 @@ historyFP.open("history.txt", ios::in);
     else{
         while(1){
             getline(historyFP, dt);
-            historyFP >>type;
+            getline(historyFP, type);
             historyFP >>accNum;
             historyFP >>amount;
-            historyFP >>recipient;
+            historyFP.ignore();
+            getline(historyFP, recipient);
             historyFP >>balance;
 
             historyFP.ignore();
