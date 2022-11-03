@@ -7,6 +7,7 @@
 #include <locale>
 #include <iomanip>
 #include <string>
+#include "design.h"
 
 using namespace std;
 
@@ -96,6 +97,8 @@ int main()
 int choice;
 
     ATM atm;
+    design design;                                              //creates an object for design class
+    //design.putToBank();                                            //calls border() function
     atm.makeNull();
     atm.retrieveAllAccounts();
     putComma();                                                 //adds comma and decimal to money displays
@@ -109,14 +112,14 @@ int choice;
             case 2: system("cls"); atm.withdrawal(); exit(0); break;
             case 3: system("cls"); atm.askPin(); system("cls"); atm.deposit(); break;
             case 4: system("cls"); atm.askPin(); system("cls"); atm.fundTransfer(); break;
-            case 5: system("cls"); atm.askPin(); system("cls");
+            case 5: system("cls");
                 cout <<"\nOTHER TRANSACTIONS\n";
                 cout <<"\n(1) Transaction History";
                 cout <<"\n(2) Change PIN";
                 cout <<"\n\nEnter choice: ";
                 cin >>choice;
                 switch(choice){
-                    case 1: system("cls"); atm.displayHistory(); break;
+                    case 1: system("cls"); atm.askPin(); system("cls"); atm.displayHistory(); break;
                     case 2: system("cls"); atm.changePin(); break;
                     default: cout <<"\nInvalid Transaction: Enter only numbers from 1-2\n"; system("pause");
                 }
@@ -267,10 +270,10 @@ float thou, fivehun, twohun, onehun;
     do{
         system("cls");
         cout <<"AMOUNT DENOMINATION\n";
-        cout <<"\n1,000 x " <<thou <<" = "<<1000*thou;
-        cout <<"\n500 x " <<fivehun <<" = " <<500*fivehun;
-        cout <<"\n200 x " <<twohun <<" = " <<200*twohun;
-        cout <<"\n100 x " <<onehun <<" = " <<100*onehun;
+        cout <<"\n1,000 x " <<std::setprecision(0) << std::fixed <<thou <<" = " <<std::setprecision(2) << std::fixed <<1000*thou;
+        cout <<"\n500 x " <<std::setprecision(0) << std::fixed<<fivehun <<" = " <<std::setprecision(2) << std::fixed<<500*fivehun;
+        cout <<"\n200 x " <<std::setprecision(0) << std::fixed<<twohun <<" = " <<std::setprecision(2) << std::fixed<<200*twohun;
+        cout <<"\n100 x " <<std::setprecision(0) << std::fixed<<onehun <<" = " <<std::setprecision(2) << std::fixed<<100*onehun;
         cout <<"\n______________________________________";
         cout <<"\nTOTAL AMOUNT: " <<amount;
 
@@ -299,7 +302,7 @@ float thou, fivehun, twohun, onehun;
             cout <<"\nPlease wait while we process this transaction...\n";
         }
 
-        cout <<"\nFunds transferred successfully.\n";  system("pause");
+        cout <<"\nCash deposited successfully.\n";  system("pause");
         cout <<"\nPlease check your account balance.\n"; system("pause"); //take cash
 
         Date();
@@ -368,7 +371,8 @@ int temp, ch, i;
             cout <<"\nPlease wait while we process this transaction...\n";
         }
 
-        cout <<"\nAmount transferred successfully.";
+        cout <<"\nFunds transferred successfully."; system("pause");
+        cout <<"\nPlease check your account balance.\n"; system("pause");
 
         Date();
         if(chR==1){saveReceipt();}                      //take receipt
@@ -384,8 +388,8 @@ int temp, ch, i;
 }
 
 void ATM:: changePin(){
-    string pinEntered,newPin,reEnterPin;
-    int tries=0;
+string pinEntered,newPin,reEnterPin;
+int tries=0;
 
     cout<< "\tCHANGE PINCODE\n\n";
     while(pinEntered!=pin && tries<3){                          //hanggat di equal ang pinentered sa pin di pa less than 3 tries
@@ -407,24 +411,24 @@ void ATM:: changePin(){
                                                                 //balik sa homepage.
             }
     }
-            do{
-                system("cls");                                  //gagawin ito hanggat hindi equal yung newPin at reEnterPin
-                cout<< "\tCHANGE PINCODE\n";
-                cout<<"\n\nEnter your new 6-digit PIN: ";       // enter new pin
-                pincode();
-                newPin=pin;                                     //inistore yung pin sa variable newPin
+    do{
+        system("cls");                                  //gagawin ito hanggat hindi equal yung newPin at reEnterPin
+        cout<< "\tCHANGE PINCODE\n";
+        cout<<"\n\nEnter your new 6-digit PIN: ";       // enter new pin
+        pincode();
+        newPin=pin;                                     //inistore yung pin sa variable newPin
 
-                cout<<"\nRe-enter new 6-digit PIN: ";           //re- enter pin
-                pincode();
-                reEnterPin=pin;                                 //inistore yung pin sa variable reEnterPin
-                }while(newPin!=reEnterPin);
+        cout<<"\nRe-enter new 6-digit PIN: ";           //re- enter pin
+        pincode();
+        reEnterPin=pin;                                 //inistore yung pin sa variable reEnterPin
+    }while(newPin!=reEnterPin);
 
-             if(pin==newPin){
-                        encrypt();
-                        savePincode();
-                        cout<<"\n\nPin code has been successfully changed.\n";
-                        system("pause");
-                        askToExit();
+    if(pin==newPin){
+    encrypt();
+    savePincode();
+    cout<<"\n\nPin code has been successfully changed.\n";
+    system("pause");
+    askToExit();
     }
 }
 
