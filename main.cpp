@@ -6,6 +6,7 @@
 #include <ctime>       /* time_t, struct tm, time, gmtime */
 #include <locale>
 #include <iomanip>
+#include <string>
 
 using namespace std;
 
@@ -280,13 +281,14 @@ int thou, fivehun, twohun, onehun;
 
     do{
         system("cls");
+        putComma();
         cout <<"AMOUNT DENOMINATION\n";
-        cout <<"\n1,000 x " <<thou <<" = "; putComma(); cout <<1000*thou;
-        cout <<"\n500 x " <<fivehun <<" = "; cout <<500*fivehun;
-        cout <<"\n200 x " <<twohun <<" = "; cout <<200*twohun;
-        cout <<"\n100 x " <<onehun <<" = "; cout <<100*onehun;
+        cout <<"\n1,000 x " <<thou <<" = " <<1000*thou;
+        cout <<"\n500 x " <<fivehun <<" = " <<500*fivehun;
+        cout <<"\n200 x " <<twohun <<" = " <<200*twohun;
+        cout <<"\n100 x " <<onehun <<" = " <<100*onehun;
         cout <<"\n______________________________________";
-        cout <<"\nTOTAL AMOUNT: "; putComma(); cout <<amount;
+        cout <<"\nTOTAL AMOUNT: " <<amount;
 
         if(amount > 50000){
             cout <<"\nDeposit amounts larger than P50,000 must be proccessed over the counter\n\n";
@@ -295,7 +297,7 @@ int thou, fivehun, twohun, onehun;
 
         cout <<"\n\n(1) CONFIRM";
         cout <<"\n(2) BACK";
-        cout <<"\nEnter your choice: ";
+        cout <<"\n\nEnter your choice: ";
         cin >>ch;
         if(ch!=1 && ch!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
     }while(ch!=1 && ch!=2);
@@ -362,7 +364,7 @@ int temp, ch, i;
         cout <<"Your account number: " <<p->accNum <<"\n";
         cout <<"Recipient's account number: " <<r->accNum <<"\n";
         cout <<"Recipient's name: " <<r->name <<"\n";
-        cout <<"Amount to transfer: " <<amount <<"\n";
+        cout <<"Amount to transfer: "; putComma(); cout <<amount <<"\n";
 
         cout <<"\n(1) CONFIRM";
         cout <<"\n(2) BACK";
@@ -446,13 +448,16 @@ void ATM:: changePin(){
 void ATM::displayHistory(){
 HISTORY *p;
 int i=1;
+string accNumS;
 
+    accNumS= to_string(p->accNum);                            //converts int to string para di masama sa malalagyan ng comma
+    putComma();
     p=headH;
     cout <<"\tTRANSACTION HISTORY\n\n";
     while(p!=NULL){
         cout <<p->dateTime <<"\n";
         cout <<"Transaction type: " <<p->type <<"\n";
-        cout <<"Your account number: " <<p->accNum <<"\n";
+        cout <<"Your account number: " <<accNumS <<"\n";
         cout <<"Amount: " <<p->amount <<"\n";
         cout <<"Recipient: " <<p->recipient <<"\n";
         cout <<"Balance: " <<p->balance <<"\n\n";
@@ -464,9 +469,9 @@ int i=1;
 void ATM:: askReceipt(){
     do{
         system("cls");
-        cout <<"\n\nDo you want a printed receipt?";
-        cout <<"\n(1) YES" <<"\n(2) NO";
-        cout <<"\nEnter your choice: ";
+        cout <<"Do you want a printed receipt?";
+        cout <<"\n\n(1) YES" <<"\n(2) NO";
+        cout <<"\n\nEnter your choice: ";
         cin >> chR;
         if(chR!=1 && chR!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
     }while(chR!=1 && chR!=2);
@@ -477,9 +482,9 @@ int ch;
     do{
         system("cls");
         cout <<"Do you want to do another transaction?";
-        cout <<"\n(1) YES";
+        cout <<"\n\n(1) YES";
         cout <<"\n(2) EXIT";
-        cout <<"\n\n Enter your choice: ";
+        cout <<"\n\nEnter your choice: ";
         cin >> ch;
         if(ch!=1 && ch!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
     }while(ch!=1 && ch!=2);
