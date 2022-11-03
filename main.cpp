@@ -11,7 +11,7 @@ using namespace std;
 
 typedef struct allAcc{
     string name;
-    int accNum;
+    int accNum, chR;
     float balance;
     struct allAcc *nxt;
 }ALLACC;
@@ -53,6 +53,7 @@ private:
     void decrypt();
     void findRecipient();
     void askToExit();
+    void askReceipt();
 
 public:
     void retrieveAllAccounts();
@@ -85,6 +86,7 @@ class comma_numpunct : public std::numpunct<char>   //para sa paglalagay ng comm
 void putComma();
 void Date();
 string dt;
+int chR;
 char dateTime[100];
 //int head=NULL;
 int main()
@@ -113,72 +115,72 @@ int choice;
                 switch(choice){
                     case 1: system("cls"); atm.displayHistory(); break;
                     case 2: system("cls"); atm.changePin(); break;
+                    default: cout <<"\nInvalid Transaction: Enter only numbers from 1-2\n"; system("pause");
                 }
 
                 break;
 
             case 6: system("cls"); atm.removeCard(); exit(0); break;
+            default: cout <<"\nInvalid Transaction: Enter only numbers from 1-6\n";  system("pause");
         }
     }
 return 0;
 }
 
-void ATM:: insertCard(){            //dinede-tect niya kung registered na ang card
-fstream pinFP;                      //tsaka sinasabi kay user na mag-insert na ng card
+void ATM:: insertCard(){                        //dinede-tect niya kung registered na ang card
+fstream pinFP;                                  //tsaka sinasabi kay user na mag-insert na ng card
 string c, enteredPin;
 int ch, tries=0;
 
-    do{system("cls");              //hanggang di pa na-insert card, sasabihin na i-insert na.
+    do{system("cls");                           //hanggang di pa na-insert card, sasabihin na i-insert na.
+        cout <<"\tBANK\n\n";
         cout <<"Please insert card...\n";
         pinFP.open("pincode.txt", ios::in);
     } while(!pinFP);
 
-    //kapag na-insert na card
     system("cls");
-
-    getline(pinFP, c);     //kukuha ng strring from fp
-    if(c.empty()){  //empty()- iche-check kung ang string ay empty. 1- true 0-false
+    getline(pinFP, c);                          //kukuha ng strring from fp
+    if(c.empty()){                              //empty()- iche-check kung ang string ay empty. 1- true 0-false
         cout <<"\nYour ATM Card is not yet registered.";
         cout <<"\nDo you want to register?";
         cout <<"\n(1) REGISTER";
         cout <<"\n(2) EXIT";
         cout <<"\nEnter your choice: ";
         cin >> ch;
-        if(ch==1){system("cls");    //Kapag walang laman or di pa registered
+        if(ch==1){system("cls");                //Kapag walang laman or di pa registered
             registration();
             saveRegistration();
             encrypt();
             savePincode();
             addAccount();
             saveAllAccounts();
-            removeCard();
+            removeCard(); exit(0);
 
         }
-        //di pa nagana
-        else{removeCard(); exit(0);}
+        else if(ch==2){removeCard(); exit(0);}
+        else{cout <<"\nInvalid Transaction: Enter only numbers from 1-2\n"; system("pause");}
     }
 
-    else{       //kung may laman na or registered na card
-        while(enteredPin!=pin && tries<3){        //hanggang di pa correct pin at di pa blocked
+    else{                                        //kung may laman na or registered na card
+        while(enteredPin!=pin && tries<3){       //hanggang di pa correct pin at di pa blocked
             system("cls");
             cout <<"\nEnter 6-digit pin: ";
             pincode();
             enteredPin=pin;
             retrievePincode();
             decrypt();
-            if(enteredPin!=pin){                //kapag mali ang pin
+            if(enteredPin!=pin){                 //kapag mali ang pin
                 cout <<"\nIncorrect pin!\n";
-                tries++; system("pause");                       //madadagdagan ang number of tries
-
+                tries++; system("pause");        //madadagdagan ang number of tries
             }
         }
 
-        if(tries==3){       //kapag na-block na
+        if(tries==3){                              //kapag na-block na
             cout <<"\nYour account was blocked!";
-            removeCard();
-            //balik sa homepage.
+            removeCard(); exit(0);
+                                                //balik sa homepage.
         }
-        retrievePincode(); //para before tawagin si findAccount, refreshed ang accNum.
+        retrievePincode();                      //para before tawagin si findAccount, refreshed ang accNum.
     }
 }
 
@@ -197,14 +199,15 @@ int choice;
             cout <<"Transcaction Type: " <<type <<"\n" ;
             cout <<"Account Number: " << p->accNum <<"\n" ;
             cout <<"Account Balance: ";
-            putComma();         //ginagawang money format ang float.
+            putComma();                         //ginagawang money format ang float.
             cout << p->balance <<"\n";
             system("pause");
         }
-        else{
+        else if(choice==2){
             saveReceipt();
-            //bukas receipt.txt
+                                            //bukas receipt.txt
         }
+        else{cout <<"\nInvalid Transaction: Enter only numbers from 1-2\n"; system("pause");}
 
         askToExit();
 }
@@ -236,10 +239,7 @@ int temp, ch, i;
 
     p->balance-= amount;            //ima-iminus yung amount sa balance
     recipient="N/A";
-    cout <<"\nDo you want a printed receipt?";
-    cout <<"\n(1) YES" <<"\n(2) NO";
-    cout <<"\nEnter your choice: ";
-    cin >> ch;
+    askReceipt();
 
     for(i=0; i<50; i++){            //para lang mag-display ng loading keme
         system("cls");
@@ -250,11 +250,11 @@ int temp, ch, i;
     cout <<"\nPlease take your cash.\n";    //take cash
     system("pause");
 
-    if(ch==1){saveReceipt();}               //take receipt
+    Date();
+    if(chR==1){saveReceipt();}               //take receipt
     saveAllAccounts();
     addHistory();
     saveHistory();
-
 }
 
 void ATM:: deposit(){
@@ -266,26 +266,27 @@ int thou, fivehun, twohun, onehun;
     cout <<"This machine can only accept 100, 200, 500, and 1000 bills\n\n";
     system("pause");
 
-        system("cls");
-        cout <<"\tCASH DEPOSIT\n\n";
-        cout <<"\nEnter number of pieces of your P1,000 bills: ";
-        cin >>thou;
-        cout <<"\nEnter number of pieces of your P500 bills: ";
-        cin >>fivehun;
-        cout <<"\nEnter number of pieces of your P200 bills: ";
-        cin >>twohun;
-        cout <<"\nEnter number of pieces of your P100 bills: ";
-        cin >>onehun;
-        amount=( (1000*thou)+(500*fivehun)+(200*twohun)+(100*onehun));
+    system("cls");
+    cout <<"\tCASH DEPOSIT\n\n";
+    cout <<"\nEnter number of pieces of your P1,000 bills: ";
+    cin >>thou;
+    cout <<"\nEnter number of pieces of your P500 bills: ";
+    cin >>fivehun;
+    cout <<"\nEnter number of pieces of your P200 bills: ";
+    cin >>twohun;
+    cout <<"\nEnter number of pieces of your P100 bills: ";
+    cin >>onehun;
+    amount=( (1000*thou)+(500*fivehun)+(200*twohun)+(100*onehun));
 
+    do{
         system("cls");
         cout <<"AMOUNT DENOMINATION\n";
-        cout <<"\n1,000 x " <<thou <<" = " <<1000*thou;
-        cout <<"\n500 x " <<fivehun <<" = " <<500*fivehun;
-        cout <<"\n200 x " <<twohun <<" = " <<200*twohun;
-        cout <<"\n100 x " <<onehun <<" = " <<100*onehun;
+        cout <<"\n1,000 x " <<thou <<" = "; putComma(); cout <<1000*thou;
+        cout <<"\n500 x " <<fivehun <<" = "; cout <<500*fivehun;
+        cout <<"\n200 x " <<twohun <<" = "; cout <<200*twohun;
+        cout <<"\n100 x " <<onehun <<" = "; cout <<100*onehun;
         cout <<"\n______________________________________";
-        cout <<"\nTOTAL AMOUNT: " <<amount;
+        cout <<"\nTOTAL AMOUNT: "; putComma(); cout <<amount;
 
         if(amount > 50000){
             cout <<"\nDeposit amounts larger than P50,000 must be proccessed over the counter\n\n";
@@ -296,32 +297,32 @@ int thou, fivehun, twohun, onehun;
         cout <<"\n(2) BACK";
         cout <<"\nEnter your choice: ";
         cin >>ch;
-        if(ch==2){system("cls"); deposit();}
-        else{
+        if(ch!=1 && ch!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
+    }while(ch!=1 && ch!=2);
+
+    if(ch==2){system("cls"); deposit();}
+    else{
+        system("cls");
+        cout <<"\nAmount deposited: " << amount <<endl; system("pause");
+        p->balance+= amount;                                //ipa-plus yung amount sa balance
+        recipient="N/A";
+        askReceipt();
+
+        for(i=0; i<50; i++){                                //para lang mag-display ng loading keme
             system("cls");
-            cout <<"\nAmount deposited: " << amount;
-            p->balance+= amount;            //ipa-plus yung amount sa balance
-            recipient="N/A";
-            cout <<"\n\nDo you want a printed receipt?";
-            cout <<"\n(1) YES" <<"\n(2) NO";
-            cout <<"\nEnter your choice: ";
-            cin >> ch;
-
-            for(i=0; i<50; i++){            //para lang mag-display ng loading keme
-                system("cls");
-                cout <<"\nPlease wait while we process this transaction...\n";
-            }
-
-            cout <<"\nPlease check your account balance.\n";    //take cash
-            system("pause");
-
-            if(ch==1){saveReceipt();}               //take receipt
-            saveAllAccounts();
-            addHistory();
-            saveHistory();
-            askToExit();
+            cout <<"\nPlease wait while we process this transaction...\n";
         }
 
+        cout <<"\nPlease check your account balance.\n";    //take cash
+        system("pause");
+
+        Date();
+        if(chR==1){saveReceipt();}                          //take receipt
+        saveAllAccounts();
+        addHistory();
+        saveHistory();
+        askToExit();
+    }
 }
 
 void ATM:: fundTransfer(){
@@ -329,7 +330,6 @@ int temp, ch, i;
 
     type= "Fund Transfer";
     cout <<"\tFUND TRANSFER\n\n";
-    //cout <<"This machine can only transfer 100, 500, and 1000 bills\n\n";
 
     do{
         system("cls");
@@ -346,7 +346,7 @@ int temp, ch, i;
         cout <<"\tFUND TRANSFER\n\n";
         cout <<"Enter amount: ";
         cin >> amount;
-        temp=(int) amount;          //store sa int varabiale ang amount para magamit modulo.
+        temp=(int) amount;                                  //store sa int varabiale ang amount para magamit modulo.
 
         if(temp %100!=0){
             cout <<"\nThis machine can only transfer 100, 500, and 1000 bills\n\n";
@@ -356,51 +356,53 @@ int temp, ch, i;
             system("pause");}
     }
 
-    system("cls");
-    cout <<"\tFUND TRANSFER\n\n";
-    cout <<"Your account number: " <<p->accNum <<"\n";
-    cout <<"Recipient's account number: " <<r->accNum <<"\n";
-    cout <<"Recipient's name: " <<r->name <<"\n";
-    cout <<"Amount to transfer: " <<amount <<"\n";
-    cout <<"\n(1) CONFIRM";
-    cout <<"\n(2) BACK";
-    cout <<"\n\nEnter your choice: ";
-    cin >> ch;
+    do{
+        system("cls");
+        cout <<"\tFUND TRANSFER\n\n";
+        cout <<"Your account number: " <<p->accNum <<"\n";
+        cout <<"Recipient's account number: " <<r->accNum <<"\n";
+        cout <<"Recipient's name: " <<r->name <<"\n";
+        cout <<"Amount to transfer: " <<amount <<"\n";
+
+        cout <<"\n(1) CONFIRM";
+        cout <<"\n(2) BACK";
+        cout <<"\n\nEnter your choice: ";
+        cin >> ch;
+        if(ch!=1 && ch!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
+    }while(ch!=1 && ch!=2);
 
     if(ch==1){
         system("cls");
-        p->balance-= amount;            //ima-iminus yung amount sa balance ni sender
-        r->balance+= amount;                 //ia-add yung amount sa balance ni recipient
-        cout <<"\nDo you want a printed receipt?";
-        cout <<"\n(1) YES" <<"\n(2) NO";
-        cout <<"\nEnter your choice: ";
-        cin >> ch;
+        p->balance-= amount;                            //ima-iminus yung amount sa balance ni sender
+        r->balance+= amount;                            //ia-add yung amount sa balance ni recipient
+        askReceipt();
 
-        for(i=0; i<50; i++){            //para lang mag-display ng loading keme
+        for(i=0; i<50; i++){                            //para lang mag-display ng loading keme
             system("cls");
             cout <<"\nPlease wait while we process this transaction...\n";
         }
 
         cout <<"\nAmount transferred successfully.";
 
-        if(ch==1){saveReceipt();}               //take receipt
+        Date();
+        if(chR==1){saveReceipt();}                      //take receipt
         saveAllAccounts();
         recipient=r->name;
         addHistory();
         saveHistory();
         askToExit();
-        }
+    }
 
     else{return;}
 
 }
 
-void ATM:: changePin(){                    //
+void ATM:: changePin(){
     string pinEntered,newPin,reEnterPin;
     int tries=0;
 
     cout<< "\tCHANGE PINCODE\n\n";
-    while(pinEntered!=pin && tries<3){     //hanggat di equal ang pinentered sa pin di pa less than 3 tries
+    while(pinEntered!=pin && tries<3){                          //hanggat di equal ang pinentered sa pin di pa less than 3 tries
             system("cls");
             cout<< "\t ENTER CURRENT PIN CODE TO CHANGE PINCODE\n\n";
             cout<<"\nEnter your current PIN: ";
@@ -411,24 +413,24 @@ void ATM:: changePin(){                    //
             if(pinEntered!=pin){
                  cout <<"\nIncorrect PIN!\n";
                  tries++;
-                 system("pause");                       //madadagdagan ang number of tries
+                 system("pause");                               //madadagdagan ang number of tries
             }
-            if(tries==3){       //kapag na-block na
+            if(tries==3){                                       //kapag na-block na
             cout <<"\nYour account was blocked!\n"; system("pause");
              removeCard();exit(0);
-            //balik sa homepage.
+                                                                //balik sa homepage.
             }
     }
             do{
-                system("cls");     //gagawin ito hanggat hindi equal yung newPin at reEnterPin
+                system("cls");                                  //gagawin ito hanggat hindi equal yung newPin at reEnterPin
                 cout<< "\tCHANGE PINCODE\n";
-                cout<<"\n\nEnter your new 6-digit PIN: "; // enter new pin
+                cout<<"\n\nEnter your new 6-digit PIN: ";       // enter new pin
                 pincode();
-                newPin=pin; //inistore yung pin sa variable newPin
+                newPin=pin;                                     //inistore yung pin sa variable newPin
 
-                cout<<"\nRe-enter new 6-digit PIN: "; //re- enter pin
+                cout<<"\nRe-enter new 6-digit PIN: ";           //re- enter pin
                 pincode();
-                reEnterPin=pin; //inistore yung pin sa variable reEnterPin
+                reEnterPin=pin;                                 //inistore yung pin sa variable reEnterPin
                 }while(newPin!=reEnterPin);
 
              if(pin==newPin){
@@ -451,29 +453,39 @@ int i=1;
         cout <<p->dateTime <<"\n";
         cout <<"Transaction type: " <<p->type <<"\n";
         cout <<"Your account number: " <<p->accNum <<"\n";
-        cout <<"amount: " <<p->amount <<"\n";
-        cout <<"recipient: " <<p->recipient <<"\n";
-        cout <<"balance: " <<p->balance <<"\n\n";
+        cout <<"Amount: " <<p->amount <<"\n";
+        cout <<"Recipient: " <<p->recipient <<"\n";
+        cout <<"Balance: " <<p->balance <<"\n\n";
         p=p->nxt;
     }
     system("pause");
 }
 
-
+void ATM:: askReceipt(){
+    do{
+        system("cls");
+        cout <<"\n\nDo you want a printed receipt?";
+        cout <<"\n(1) YES" <<"\n(2) NO";
+        cout <<"\nEnter your choice: ";
+        cin >> chR;
+        if(chR!=1 && chR!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
+    }while(chR!=1 && chR!=2);
+}
 
 void ATM:: askToExit(){
 int ch;
-    system("cls");
-    cout <<"Do you want to do another transaction?";
-    cout <<"\n(1) YES";
-    cout <<"\n(2) EXIT";
-    cout <<"\n\n Enter your choice: ";
-    cin >> ch;
-    if(ch==1){
-        return;
-    }
-    else{removeCard(); exit(0);}
+    do{
+        system("cls");
+        cout <<"Do you want to do another transaction?";
+        cout <<"\n(1) YES";
+        cout <<"\n(2) EXIT";
+        cout <<"\n\n Enter your choice: ";
+        cin >> ch;
+        if(ch!=1 && ch!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
+    }while(ch!=1 && ch!=2);
 
+    if(ch==1){return;}
+    else if(ch==2){removeCard(); exit(0);}
 }
 
 void ATM:: saveReceipt(){
@@ -486,7 +498,6 @@ receiptFP.open("receipt.txt", ios::out);   //out kapag magpi-print sa file
     }
 
     receiptFP <<"\tTITLE NG BANK\n";
-    Date();
     receiptFP <<dt <<"\n\n";
     receiptFP <<"Transaction Type: " <<type <<"\n";
     receiptFP <<"Account Number: " <<p->accNum <<"\n";
@@ -507,22 +518,7 @@ receiptFP.open("receipt.txt", ios::out);   //out kapag magpi-print sa file
 receiptFP.close();
 }
 
-
-/*void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
-fstream pinFP;
-pinFP.open("D:\pincode.txt",ios::in);
-    //di pa niya nade-detect kung natanggal na
-    do{
-        system("cls");
-        cout <<"Please remove card...";
-    }while(pinFP);
-
-    pinFP.close();
-    cout <<"Thank you for banking with MYLUGI BANK ";
-    exit(0);
-}*/
-
-void ATM:: removeCard(){      //in C   //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
+void ATM:: removeCard(){                    //in C   //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
 FILE *pinFP;
     do{ system("cls");
         printf("Please remove card...");
@@ -552,23 +548,18 @@ string initialPin;
     cout <<"\nEnter your Cellphone number: ";
     cin >>regInfo.number;
 
-    initialPin= " ";                    //pang-reset ng value ng initialPin
-    while(initialPin!=pin){             //hanggat hindi nag-match, ulit sa ask pincode.
+    initialPin= " ";                                        //pang-reset ng value ng initialPin
+    while(initialPin!=pin){                                 //hanggat hindi nag-match, ulit sa ask pincode.
         system("cls");
         cout <<"\nEnter 6-digit PIN: ";
-        pincode();  //mag-enter ng PIN
-            /*while(index <5){
-                cout <<"\nEnter 6-digit PIN: ";
-                pincode();
-            }*/
-        initialPin=pin;                 //sinalin si pin sa initialPin na string.
+        pincode();                                          //mag-enter ng PIN
+        initialPin=pin;                                     //sinalin si pin sa initialPin na string.
         cout <<"\nRe-enter 6-digit PIN :";
         pincode();
         //*LAGAY NG COMMENT KAPAG DI NAG-MATCH
     }
 
-    //*LAGAY CONDITIONS: IF MUTILPLES OF 100
-    while(amount < 1000){               //hanggat mas mababa sa 5000
+    while(amount < 1000){
         system("cls");
         cout <<"\nInitial deposit must be at least 1000";
         cout <<"\nEnter amount of initial deposit: ";
@@ -586,31 +577,31 @@ string initialPin;
     system("pause");
 }
 
-void ATM:: pincode(){       //ginagawa niyang asterisk yung PIN
+void ATM:: pincode(){                                           //ginagawa niyang asterisk yung PIN
 int index =0;
 char ch;
 
-    while((ch=getch())!=13 && index<5){ //habang hindi pa 6 ang digit at hindi pa nag-backspace
+    while((ch=getch())!=13 && index<5){                         //habang hindi pa 6 ang digit at hindi pa nag-backspace
         if (index<0){
             index=0;
         }
-        if(ch==8){//backspace ascii is 8 //nagbackspace
-            putch('\b');    //babalik yung cursor backward
-            putch(' ');     //print space
-            putch('\b');    //babalik cursor backward
-            index--;        //minus digit
-            continue;       //break na if statement.
+        if(ch==8){                                              //backspace ascii is 8 //nagbackspace
+            putch('\b');                                        //babalik yung cursor backward
+            putch(' ');                                         //print space
+            putch('\b');                                        //babalik cursor backward
+            index--;                                            //minus digit
+            continue;                                           //break na if statement.
         }
-        if(isdigit(ch)){    //kapag nag-enter ng digit
+        if(isdigit(ch)){                                        //kapag nag-enter ng digit
             pin[index++]=ch;
             putchar('*');
         }
     }
 
-    if (index==5){      //kapag 6 digits na.
+    if (index==5){                                              //kapag 6 digits na.
         pin[index++]=ch;
     }
-    pin[index]='\0';    //kapag pag 7th digit na
+    pin[index]='\0';                                            //kapag pag 7th digit na
 
     if (index <5){
         system("cls");
@@ -621,13 +612,13 @@ char ch;
 
 void ATM:: saveRegistration(){
 fstream regFP;
-regFP.open("registration.txt", ios::out);   //out kapag magpi-print sa file
+regFP.open("registration.txt", ios::out);                       //out kapag magpi-print sa file
 
     if(!regFP){
         cout <<"registration.txt do not exist!\n";;
         system("pause");
     }
-    regFP <<regInfo.name <<"\n";            //Save registration info sa registration.txt
+    regFP <<regInfo.name <<"\n";                                //Save registration info sa registration.txt
     regFP <<regInfo.age <<"\n";
     regFP <<regInfo.birthday <<"\n";
     regFP <<regInfo.number <<"\n";
@@ -636,7 +627,7 @@ regFP.open("registration.txt", ios::out);   //out kapag magpi-print sa file
 
 void ATM:: savePincode(){
 fstream pinFP;
-pinFP.open("pincode.txt", ios::out);   //out kapag magpi-print sa file
+pinFP.open("pincode.txt", ios::out);
 
     pinFP <<pin <<"\n";
     pinFP <<accNum;
@@ -646,7 +637,7 @@ pinFP.open("pincode.txt", ios::out);   //out kapag magpi-print sa file
 
 void ATM:: retrievePincode(){
 fstream pinFP;
-pinFP.open("pincode.txt", ios::in);  //in kapag mag retrieve from file
+pinFP.open("pincode.txt", ios::in);                             //in kapag mag retrieve from file
 
     if(!pinFP){
         cout <<"pincode.txt do not exist!\n";;
@@ -661,7 +652,7 @@ pinFP.open("pincode.txt", ios::in);  //in kapag mag retrieve from file
 pinFP.close();
 }
 
-void ATM:: findAccount(){           //hinahanap yung account info ng current user.
+void ATM:: findAccount(){                                       //hinahanap yung account info ng current user.
 
     p=head;
 
@@ -670,7 +661,7 @@ void ATM:: findAccount(){           //hinahanap yung account info ng current use
     }
 }
 
-void ATM:: findRecipient(){           //hinahanap yung account info ng recipient
+void ATM:: findRecipient(){                                     //hinahanap yung account info ng recipient
 
     r=head;
 
@@ -679,7 +670,7 @@ void ATM:: findRecipient(){           //hinahanap yung account info ng recipient
     }
 }
 
-void ATM::saveAllAccounts(){        //pini-print sa text file ang lahat ng accounts
+void ATM::saveAllAccounts(){                                    //pini-print sa text file ang lahat ng accounts
 fstream allAccFP;
 allAccFP.open("allAccounts.txt", ios::out);
 
@@ -691,17 +682,17 @@ ALLACC *p;
         system("pause");
     }
     else{
-        while(p!=NULL){                         //hanggat di pa dulo
+        while(p!=NULL){                                         //hanggat di pa dulo
             allAccFP <<p->accNum <<"\n";
             allAccFP <<p->name <<"\n";
             allAccFP <<p->balance <<"\n\n";
-            p=p->nxt;                           //usod sa next account
+            p=p->nxt;                                           //usod sa next account
         }
     }
     allAccFP.close();
 }
 
-void ATM::retrieveAllAccounts(){            //kukunin yung mga accounts mula sa allAccounts.txt at isasalin sa linkedlist
+void ATM::retrieveAllAccounts(){                                //kukunin yung mga accounts mula sa allAccounts.txt at isasalin sa linkedlist
 fstream allAccFP;
 allAccFP.open("allAccounts.txt", ios::in);
 
@@ -713,7 +704,7 @@ allAccFP.open("allAccounts.txt", ios::in);
     else{
         while(1){
             allAccFP >>accNum;
-            allAccFP.ignore();                 //flushes the file
+            allAccFP.ignore();                                  //flushes the file
             getline(allAccFP, regInfo.name);
             allAccFP >>balance;
 
@@ -726,69 +717,69 @@ allAccFP.open("allAccounts.txt", ios::in);
     allAccFP.close();
 }
 
-void ATM:: addAccount(){    //sine-save yung new account sa linkedlist
+void ATM:: addAccount(){                                        //sine-save yung new account sa linkedlist
 
-    n= new ALLACC; //allocates memory to n
+    n= new ALLACC;                                              //allocates memory to n
     n->name=regInfo.name; n->accNum=accNum; n->balance=balance; //Lagay info sa n
-    n->nxt=head;    //value ng head ay ilagay sa second node
-    head=n;         //value ng n ay ilagay sa head
+    n->nxt=head;                                                //value ng head ay ilagay sa second node
+    head=n;                                                     //value ng n ay ilagay sa head
 }
 
-void ATM:: addRetrieve(){   //sine-save yung lahat ng accounts mulsa sa file sa LinkedList
+void ATM:: addRetrieve(){                                       //sine-save yung lahat ng accounts mulsa sa file sa LinkedList
 ALLACC *q, *p, *n;
 
-    n= new ALLACC; //allocates memory to n
+    n= new ALLACC;
     n->name=regInfo.name; n->accNum=accNum; n->balance=balance;
-    p=q=head; //set lahat sa head
+    p=q=head;
     while(p!=NULL){
         q=p;
         p=p->nxt;
     }
 
-    if(p==head){ //If wala pang laman
+    if(p==head){
         head=n;
     }
-    else{q->nxt=n;} //if may laman na
+    else{q->nxt=n;}
 
-    n->nxt=p; //lagay NULL sa dulo which is p.
+    n->nxt=p;
 
 }
 
-void ATM:: addHistory(){    //sine-save yung recent transaction sa history linkedlist
+void ATM:: addHistory(){                                            //sine-save yung recent transaction sa history linkedlist
 HISTORY *n;
 
-    n= new HISTORY; //allocates memory to n
+    n= new HISTORY;
     n->dateTime= dt;
     n->type=type; n->accNum=p->accNum; n->amount=amount;
     n->recipient=recipient; n->balance=p->balance;
-    n->nxt=headH;    //value ng head ay ilagay sa second node
-    headH=n;         //value ng n ay ilagay sa headH
+    n->nxt=headH;
+    headH=n;
 
 }
 
-void ATM:: addRetrievedHistory(){   //sine-save yung lahat ng accounts mulsa sa file sa LinkedList
+void ATM:: addRetrievedHistory(){                                   //sine-save yung lahat ng accounts mulsa sa file sa LinkedList
 HISTORY *q, *p, *n;
 
-    n= new HISTORY; //allocates memory to n
+    n= new HISTORY;
     n->dateTime=dt; n->type=type; n->accNum=accNum; n->amount= amount;
     n->recipient= recipient; n->balance=balance;
 
-    p=q=headH; //set lahat sa head
+    p=q=headH;
     while(p!=NULL){
         q=p;
         p=p->nxt;
     }
 
-    if(p==headH){ //If wala pang laman
+    if(p==headH){
         headH=n;
     }
-    else{q->nxt=n;} //if may laman na
+    else{q->nxt=n;}
 
-    n->nxt=p; //lagay NULL sa dulo which is p.
+    n->nxt=p;
 
 }
 
-void ATM::saveHistory(){        //pini-print sa text file ang lahat ng accounts
+void ATM::saveHistory(){                                            //pini-print sa text file ang lahat ng accounts
 fstream historyFP;
 historyFP.open("history.txt", ios::out);
 
@@ -800,16 +791,16 @@ HISTORY *p;
         system("pause");
     }
     else{
-        while(p!=NULL){                         //hanggat di pa dulo
+        while(p!=NULL){
             historyFP <<p->dateTime <<"\n" <<p->type <<"\n" <<p->accNum <<"\n";
             historyFP <<p->amount <<"\n" <<p->recipient <<"\n" <<p->balance <<"\n" <<endl;
-            p=p->nxt;                           //usod sa next account
+            p=p->nxt;
         }
     }
     historyFP.close();
 }
 
-void ATM::retrieveHistory(){            //kukunin yung mga history mula sa history.txt at isasalin sa linkedlist
+void ATM::retrieveHistory(){                                        //kukunin yung mga history mula sa history.txt at isasalin sa linkedlist
 fstream historyFP;
 historyFP.open("history.txt", ios::in);
 
@@ -842,17 +833,17 @@ void ATM:: encrypt(){
 
 int i=0;
 
-    while(pin[i]!='\0'){        //habang di pa NULL
-    pin[i]=pin[i] + 123;       //add code each character
+    while(pin[i]!='\0'){                                     //habang di pa NULL
+    pin[i]=pin[i] + 123;                                     //add code each character
     i++;
     }
 }
 
-void ATM:: decrypt(){     //from random symbol, papalabasin pin code para ma-check kung match inenter.
+void ATM:: decrypt(){                                       //from random symbol, papalabasin pin code para ma-check kung match inenter.
 int i=0;
 
-    while(pin[i]!='\0'){            //habang di pa NULL
-        pin[i]=pin[i] - 123;       //minus code each character
+    while(pin[i]!='\0'){                                    //habang di pa NULL
+        pin[i]=pin[i] - 123;                                //minus code each character
         i++;
     }
 }
@@ -895,6 +886,7 @@ void putComma(){
     std::cout.imbue(comma_locale);
     cout << std::setprecision(2) << std::fixed;
 }
+
 
 
 
