@@ -346,7 +346,8 @@ int temp, ch, i;
     while(temp %100!=0 || amount >= (p->balance-500)){
         system("cls");
         cout <<"\tFUND TRANSFER\n\n";
-        cout <<"Enter amount: ";
+        cout<<"\nEnter recipient's Account number: " <<accNum;
+        cout <<"\nEnter amount: ";
         cin >> amount;
         temp=(int) amount;                                  //store sa int varabiale ang amount para magamit modulo.
 
