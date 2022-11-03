@@ -99,8 +99,9 @@ int choice;
     atm.retrieveAllAccounts();
     atm.insertCard();
     atm.findAccount();
-    atm.retrieveHistory(); //nag-error siya after 2 history
+    atm.retrieveHistory();
     while(1){
+        putComma();                                                 //adds comma and decimal to money
         switch(atm.menu()){
             system("cls");
             case 1: system("cls"); atm.balInquiry(); break;
@@ -187,6 +188,7 @@ int ch, tries=0;
 
 void ATM:: balInquiry(){
 int choice;
+string accNumS= to_string(p->accNum);
 
     type ="Balance Inquiry";
     cout <<"\tBALANCE INQUIRY";
@@ -197,16 +199,15 @@ int choice;
         if(choice==1){
             system("cls");
             cout <<"Date: "; Date(); cout <<dt <<"\n\n";
-            cout <<"Transcaction Type: " <<type <<"\n" ;
-            cout <<"Account Number: " << p->accNum <<"\n" ;
+            cout <<"Transaction Type: " <<type <<"\n" ;
+            cout <<"Account Number: " << accNumS <<"\n" ;
             cout <<"Account Balance: ";
-            putComma();                         //ginagawang money format ang float.
             cout << p->balance <<"\n";
             system("pause");
         }
         else if(choice==2){
             saveReceipt();
-                                            //bukas receipt.txt
+                                                    //bukas receipt.txt
         }
         else{cout <<"\nInvalid Transaction: Enter only numbers from 1-2\n"; system("pause");}
 
@@ -260,7 +261,7 @@ int temp, ch, i;
 
 void ATM:: deposit(){
 int temp, ch, i;
-int thou, fivehun, twohun, onehun;
+float thou, fivehun, twohun, onehun;
 
     type= "Deposit";
     cout <<"\tCASH DEPOSIT\n\n";
@@ -281,9 +282,8 @@ int thou, fivehun, twohun, onehun;
 
     do{
         system("cls");
-        putComma();
         cout <<"AMOUNT DENOMINATION\n";
-        cout <<"\n1,000 x " <<thou <<" = " <<1000*thou;
+        cout <<"\n1,000 x " <<thou <<" = "<<1000*thou;
         cout <<"\n500 x " <<fivehun <<" = " <<500*fivehun;
         cout <<"\n200 x " <<twohun <<" = " <<200*twohun;
         cout <<"\n100 x " <<onehun <<" = " <<100*onehun;
@@ -305,7 +305,7 @@ int thou, fivehun, twohun, onehun;
     if(ch==2){system("cls"); deposit();}
     else{
         system("cls");
-        cout <<"\nAmount deposited: " << amount <<endl; system("pause");
+        cout <<"\nAmout of " << amount <<" was successfully deposited to your account.\n" <<endl; system("pause");
         p->balance+= amount;                                //ipa-plus yung amount sa balance
         recipient="N/A";
         askReceipt();
@@ -326,7 +326,6 @@ int thou, fivehun, twohun, onehun;
         askToExit();
     }
 }
-
 void ATM:: fundTransfer(){
 int temp, ch, i;
 
@@ -449,10 +448,8 @@ void ATM:: changePin(){
 void ATM::displayHistory(){
 HISTORY *p;
 int i=1;
-string accNumS;
 
-    accNumS= to_string(p->accNum);                            //converts int to string para di masama sa malalagyan ng comma
-    putComma();
+    string accNumS= to_string(p->accNum);                            //converts int to string para di masama sa malalagyan ng comma
     p=headH;
     cout <<"\tTRANSACTION HISTORY\n\n";
     while(p!=NULL){
