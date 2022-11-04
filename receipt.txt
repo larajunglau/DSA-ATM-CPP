@@ -1,9 +1,9 @@
 	TITLE NG BANK
-Mon October 31,2022 01:52:27 PM 
+Fri November 04,2022 02:37:16 PM 
 
-Transaction Type: Withdrawal
-Account Number: 10027126
-Amount: 100.00
-Account Balance: 500.00
+Transaction Type: Deposit
+Account Number: 10011911
+Amount: 1800.00
+Account Balance: 3700.00
 
 Thank you for banking with us!

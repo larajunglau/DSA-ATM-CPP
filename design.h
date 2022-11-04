@@ -1,14 +1,18 @@
 #ifndef DESIGN_H
 #define DESIGN_H
 
-//dito lahat ng function prototype/declaration
 
 class design
 {
     public:
         border();
+        gotoxy(int x,int y);
+        eagle();
         putToBank();
-
+        usb();
+        loadingBar();
+        secondBorder();
+        titleOnly();
 
 };
 

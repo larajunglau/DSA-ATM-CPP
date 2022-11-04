@@ -7,7 +7,10 @@
 #include <locale>
 #include <iomanip>
 #include <string>
+#include <windows.h>
 #include "design.h"
+#define BCYN "\e[1;36m"
+#define BWHT "\e[1;37m"
 
 using namespace std;
 
@@ -88,21 +91,28 @@ class comma_numpunct : public std::numpunct<char>   //para sa paglalagay ng comm
 
 void putComma();
 void Date();
+void gotoxy();
 string dt;
 int chR;
 char dateTime[100];
-//int head=NULL;
+void gotoxy(int x,int y);
 int main()
 {
+
 int choice;
 
     ATM atm;
-    design design;                                              //creates an object for design class
-    //design.putToBank();                                            //calls border() function
+    design design;
+    design.border();
+    design.putToBank();
+    design.usb();
+    design.loadingBar();
+    gotoxy(90,62); system("pause");
     atm.makeNull();
     atm.retrieveAllAccounts();
-    putComma();                                                 //adds comma and decimal to money displays
+    putComma();//adds comma and decimal to money displays
     atm.insertCard();
+    design.loadingBar();
     atm.findAccount();
     atm.retrieveHistory();
     while(1){
@@ -147,6 +157,10 @@ int ch;
     system("cls");
     getline(pinFP, c);                          //kukuha ng strring from fp
     if(c.empty()){                              //empty()- iche-check kung ang string ay empty. 1- true 0-false
+        design design;
+        design.secondBorder();
+        design.titleOnly();
+        system("pause");
         cout <<"\nYour ATM Card is not yet registered.";
         cout <<"\nDo you want to register?";
         cout <<"\n(1) REGISTER";
@@ -521,34 +535,41 @@ FILE *pinFP;
 
 void ATM:: registration(){
 string initialPin;
-int intAccNum;
+int intAccNum, i;
+char name;
 
     //*Lagay statement of agreement
     cout <<"\tREGISTRATION\n";
     cin.ignore();
     cout <<"\nEnter your full name (EX: JUAN DELA CRUZ): ";
-    //*Lagay if hindi Uppercase
     getline(cin, regInfo.name);
-    cout <<"\nEnter your Age: ";
-    cin >>regInfo.age;
-    //*IF BELOW 18
+
+    do{
+        cout <<"\nEnter your Age: ";
+        cin >>regInfo.age;
+        if(regInfo.age<18){
+            system("cls:"); cout <<"\nRegular account users must be 18 years old and above.";
+            cout<< "\nEnrollment for custodial or joint bank account must be processed in the main office.\n\n";
+            system("pause"); removeCard(); exit(0);
+        }
+    }while(regInfo.age<18);
+
     cout <<"\nEnter your Birthday (EX: MARCH 29, 1999): ";
-    //*Lagay if hindi Uppercase
     cin.ignore();
     getline(cin, regInfo.birthday);
     cout <<"\nEnter your Cellphone number: ";
     cin >>regInfo.number;
 
-    initialPin= " ";                                        //pang-reset ng value ng initialPin
-    while(initialPin!=pin){                                 //hanggat hindi nag-match, ulit sa ask pincode.
+    //initialPin= " ";                                        //pang-reset ng value ng initialPin
+    do{                                                     //hanggat hindi nag-match, ulit sa ask pincode.
         system("cls");
         cout <<"\nEnter 6-digit PIN: ";
         pincode();                                          //mag-enter ng PIN
         initialPin=pin;                                     //sinalin si pin sa initialPin na string.
         cout <<"\nRe-enter 6-digit PIN :";
         pincode();
-        //*LAGAY NG COMMENT KAPAG DI NAG-MATCH
-    }
+        if(initialPin!=pin){cout <<"\nPIN does not match.\n"; system("pause");}
+    }while(initialPin!=pin);
 
     while(amount < 1000){
         system("cls");
@@ -903,6 +924,13 @@ void putComma(){
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
     cout << std::setprecision(2) << std::fixed;
+}
+
+void gotoxy(int x,int y){
+    COORD coord = {0,0};
+    coord.X=x;
+    coord.Y=y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
 }
 
 
