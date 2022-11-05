@@ -123,13 +123,10 @@ int choice;
             system("cls");
             case 1:
                 system("cls");
-                atm.askPin(); system("cls");
-                design.secondBorder(); design.menuScreen(); design.balInquiry();
+                atm.askPin();
                 atm.balInquiry(); break;
             case 2:
                 system("cls");
-                atm.askPin(); system("cls");
-                design.secondBorder(); design.withdrawal();
                 atm.withdrawal(); exit(0); break;
             case 3:
                 system("cls");
@@ -138,7 +135,6 @@ int choice;
                 atm.deposit(); break;
             case 4:
                 system("cls");
-                atm.askPin(); system("cls");
                 design.secondBorder(); design.fundTransfer();
                 atm.fundTransfer(); break;
             case 5: system("cls");
@@ -225,26 +221,26 @@ int ch;
 void ATM:: balInquiry(){
 int choice;
 
+    system("cls"); design.secondBorder(); design.menuScreen(); design.balInquiry();
     type ="Balance Inquiry";
-    cout <<"\tBALANCE INQUIRY";
-    cout<< "\n\n(1) Show balance on screen";
-    cout<< "\n(2) Print receipt";
-    cout<< "\n\nPlease Enter your choice (1-2): ";
+    gotoxy(33,32); cout<< "(1) Show balance on screen";
+
+    gotoxy(97,32);cout<< "(2) Print receipt";
+    gotoxy(59,36);cout<< "Please Enter your choice (1-2): ";
     cin>> choice;
         if(choice==1){
-            system("cls");
-            cout <<"Date: "; Date(); cout <<dt <<"\n\n";
-            cout <<"Transaction Type: " <<type <<"\n" ;
-            cout <<"Account Number: " << p->accNum <<"\n" ;
-            cout <<"Account Balance: ";
-            cout << p->balance <<"\n";
-            system("pause");
+            system("cls"); design.secondBorder(); design.menuScreen(); design.balInquiry();
+            gotoxy(50,24); cout <<"Date: "; Date(); cout <<dt;
+            gotoxy(50,28); cout <<"Account Number: " << p->accNum;
+            gotoxy(50,30); cout <<"Account Balance: "<< p->balance;
+            gotoxy(60,45); system("pause");
         }
         else if(choice==2){
             saveReceipt();
                                                     //bukas receipt.txt
         }
-        else{cout <<"\nInvalid Transaction: Enter only numbers from 1-2\n"; system("pause");}
+        else{gotoxy(50,43); cout <<RED <<"Invalid Transaction: Enter only numbers from 1-2" <<WHITE;}
+        gotoxy(60,45); system("pause");
 
         askToExit();
 }
@@ -253,40 +249,34 @@ void ATM:: withdrawal(){
 int temp, ch, i;
 
     type= "Withdrawal";
-    cout <<"\tWITHDRAWAL\n\n";
-    cout <<"This machine can only dispense 100, 200, 500, and 1000 bills\n\n";
-    system("pause");
     while(temp %100!=0 || amount > (p->balance-500) || amount > 20000){
-        system("cls");
-        cout <<"\tWITHDRAWAL\n\n";
-        cout <<"Enter amount: ";
+        system("cls"); design.secondBorder(); design.menuScreen(); design.withdrawal();
+
+        gotoxy(40, 24); cout <<"This machine can only dispense 100, 200, 500, and 1000 bills";
+        gotoxy(60, 28); cout <<"Enter amount: ";
         cin >> amount;
         temp=(int) amount;          //store sa int varabiale ang amount para magamit modulo.
 
         if(temp %100!=0){
-            cout <<"\nThis machine can only dispense 100, 500, and 1000 bills\n\n";
-            system("pause");}
+            gotoxy(45,35); cout <<RED <<"This machine can only dispense 100, 500, and 1000 bills!" <<WHITE;
+            gotoxy(60,45); system("pause");}
         else if(amount > (p->balance-500)){
-            cout <<"\nInsufficient balance!\n";
-            system("pause");}
+            gotoxy(45,35); cout <<RED <<"Insufficient balance!\n" <<WHITE;
+            gotoxy(60,45); system("pause");}
         else if(amount > 20000){
-            cout <<"\nAmount must not exceed P20,000";
-            system("pause");}
+            gotoxy(45,35); cout <<RED <<"Amount must not exceed P20,000" <<WHITE;
+            gotoxy(60,45);system("pause");}
     }
     system("cls"); askPin(); system("cls");
 
     p->balance-= amount;            //ima-iminus yung amount sa balance
     recipient="N/A";
+
+    system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();    //for all loadings
     askReceipt();
 
-    for(i=0; i<50; i++){            //para lang mag-display ng loading keme
-        system("cls");
-        cout <<"\nPlease wait while we process this transaction...\n";
-    }
-
     removeCard();                           //take ATM
-    cout <<"\nPlease take your cash.\n";    //take cash
-    system("pause");
+    gotoxy(62,38); cout <<"Please take your cash.\n";    //take cash
 
     Date();
     if(chR==1){saveReceipt();}               //take receipt
@@ -408,6 +398,7 @@ int temp, ch, i;
         cin >> ch;
         if(ch!=1 && ch!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
     }while(ch!=1 && ch!=2);
+    askPin();
 
     if(ch==1){
         system("cls");
@@ -560,13 +551,19 @@ receiptFP.close();
 
 void ATM:: removeCard(){                    //in C   //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
 FILE *pinFP;
-    do{ system("cls");
-        printf("Please remove card...");
+
+    design.secondBorder();
+    design.homeTitle();
+    design.usb();
+    gotoxy(65, 34); cout <<"Please remove card...";
+
+    do{
         pinFP=fopen("D:\pincode.txt","r");
     } while(pinFP!=NULL);
+
     fclose(pinFP);
-    cout <<"\nThank you for banking with us!\n";
-    system("pause");
+    gotoxy(60, 42); cout <<"Thank you for banking with us!\n";
+    gotoxy(60, 45); system("pause");
 }
 
 void ATM:: registration(){
@@ -620,7 +617,7 @@ int intAccNum;
     intAccNum= rand() %99999999 +10000000;
     accNum= to_string(intAccNum);
     system("cls");
-    design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();
+    design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();         //for all loadings
 
     system("cls"); design.secondBorder(); design.homeTitle(); design.otherScreen(); design.accDetails();
 
