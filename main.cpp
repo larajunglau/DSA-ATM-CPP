@@ -9,8 +9,10 @@
 #include <string>
 #include <windows.h>
 #include "design.h"
-#define BCYN "\e[1;36m"
-#define BWHT "\e[1;37m"
+#define RED "\033[31m"
+#define WHITE"\033[37m"
+#define WHTBG "\033[107m"
+#define RESET"\033[0m"
 
 using namespace std;
 
@@ -89,39 +91,56 @@ class comma_numpunct : public std::numpunct<char>   //para sa paglalagay ng comm
     {return "\03";}
 };
 
+void setFontStyle(int FontSize);
+void gotoxy(int x,int y);
+HWND WINAPI GetConsoleWindowNT(void);
+design design;
+HANDLE m= GetStdHandle(STD_OUTPUT_HANDLE);  //m ang pag-change color sa main
+
+
 void putComma();
 void Date();
-void gotoxy();
 string dt;
 int chR;
 char dateTime[100];
-void gotoxy(int x,int y);
 int main()
 {
-
 int choice;
 
-    ATM atm;
-    design design;
-    design.border();
-    design.putToBank();
-    design.usb();
-    design.loadingBar();
-    gotoxy(90,62); system("pause");
+    HWND hWnd=GetConsoleWindowNT();
+    MoveWindow(hWnd,900,900,1200,900,TRUE);
+    setFontStyle(13);
+
+    ATM atm;                                            //creates an object for design class
     atm.makeNull();
     atm.retrieveAllAccounts();
-    putComma();//adds comma and decimal to money displays
+    putComma();                                                 //adds comma and decimal to money displays
     atm.insertCard();
-    design.loadingBar();
     atm.findAccount();
     atm.retrieveHistory();
     while(1){
         switch(atm.menu()){
             system("cls");
-            case 1: system("cls"); atm.askPin(); system("cls"); atm.balInquiry(); break;
-            case 2: system("cls"); atm.withdrawal(); exit(0); break;
-            case 3: system("cls"); atm.askPin(); system("cls"); atm.deposit(); break;
-            case 4: system("cls"); atm.askPin(); system("cls"); atm.fundTransfer(); break;
+            case 1:
+                system("cls");
+                atm.askPin(); system("cls");
+                design.secondBorder(); design.menuScreen(); design.balInquiry();
+                atm.balInquiry(); break;
+            case 2:
+                system("cls");
+                atm.askPin(); system("cls");
+                design.secondBorder(); design.withdrawal();
+                atm.withdrawal(); exit(0); break;
+            case 3:
+                system("cls");
+                atm.askPin(); system("cls");
+                design.secondBorder(); design.deposit();
+                atm.deposit(); break;
+            case 4:
+                system("cls");
+                atm.askPin(); system("cls");
+                design.secondBorder(); design.fundTransfer();
+                atm.fundTransfer(); break;
             case 5: system("cls");
                 cout <<"\nOTHER TRANSACTIONS\n";
                 cout <<"\n(1) Transaction History";
@@ -129,8 +148,15 @@ int choice;
                 cout <<"\n\nEnter choice: ";
                 cin >>choice;
                 switch(choice){
-                    case 1: system("cls"); atm.askPin(); system("cls"); atm.displayHistory(); break;
-                    case 2: system("cls"); atm.changePin(); break;
+                    case 1:
+                        system("cls");
+                        atm.askPin(); system("cls");
+                        design.secondBorder(); design.history();
+                        atm.displayHistory(); break;
+                    case 2:
+                        system("cls");
+                        design.secondBorder(); design.changePin();
+                        atm.changePin(); break;
                     default: cout <<"\nInvalid Transaction: Enter only numbers from 1-2\n"; system("pause");
                 }
 
@@ -148,41 +174,50 @@ fstream pinFP;                                  //tsaka sinasabi kay user na mag
 string c;
 int ch;
 
-    do{system("cls");                           //hanggang di pa na-insert card, sasabihin na i-insert na.
-        cout <<"\tBANK\n\n";
-        cout <<"Please insert card...\n";
+    design.secondBorder();
+    design.homeTitle();
+    design.usb();
+
+    gotoxy(65,40); cout <<"Please insert card...";
+    do{                                         //hanggang di pa na-insert card, sasabihin na i-insert na.
         pinFP.open("pincode.txt", ios::in);
     } while(!pinFP);
 
-    system("cls");
+    design.loadingBar();
     getline(pinFP, c);                          //kukuha ng strring from fp
     if(c.empty()){                              //empty()- iche-check kung ang string ay empty. 1- true 0-false
-        design design;
+        system("cls");
         design.secondBorder();
-        design.titleOnly();
-        system("pause");
-        cout <<"\nYour ATM Card is not yet registered.";
-        cout <<"\nDo you want to register?";
-        cout <<"\n(1) REGISTER";
-        cout <<"\n(2) EXIT";
-        cout <<"\nEnter your choice: ";
+        design.homeTitle();
+        design.otherScreen();
+
+        gotoxy(55,28);cout <<WHITE"Your ATM Card is not yet registered.";
+        gotoxy(55,30);cout <<WHITE"      Do you want to register?      ";
+        design.boxes();
+
+        gotoxy(33,32);cout <<RED"(1) REGISTER";
+        gotoxy(97,32);cout <<RED"(2) EXIT";
+        gotoxy(59,36);cout <<RED"Enter your choice: ";
         cin >> ch;
-        if(ch==1){system("cls");                //Kapag walang laman or di pa registered
+        if(ch==1){gotoxy(39,41);system(RESET"pause");                //Kapag walang laman or di pa registered
             registration();
             saveRegistration();
             encrypt();
             savePincode();
             addAccount();
             saveAllAccounts();
-            removeCard(); exit(0);
+            //removeCard(); exit(0);
 
         }
-        else if(ch==2){removeCard(); exit(0);}
-        else{cout <<"\nInvalid Transaction: Enter only numbers from 1-2\n"; system("pause");}
+        else if(ch==2){gotoxy(39,41);system(RESET"pause");removeCard(); exit(0);}
+        else{
+                gotoxy(82,42);cout<<RESET<<WHITE"Invalid Transaction: Enter only numbers from 1-2\n";gotoxy(90,43);system("pause");
+                system("cls");
+                exit(0);
+        }
     }
-
     else{                                        //kung may laman na or registered na card
-        askPin();
+        //askPin();
         retrievePincode();                      //para before tawagin si findAccount, refreshed ang accNum.
     }
 }
@@ -408,6 +443,7 @@ int tries=0;
     cout<< "\tCHANGE PINCODE\n\n";
     while(pinEntered!=pin && tries<3){                          //hanggat di equal ang pinentered sa pin di pa less than 3 tries
             system("cls");
+            design.secondBorder(); design.changePin();
             cout<< "\t ENTER CURRENT PIN CODE TO CHANGE PINCODE\n\n";
             cout<<"\nEnter your current PIN: ";
             pincode();
@@ -535,46 +571,47 @@ FILE *pinFP;
 
 void ATM:: registration(){
 string initialPin;
-int intAccNum, i;
-char name;
+int intAccNum;
 
     //*Lagay statement of agreement
-    cout <<"\tREGISTRATION\n";
-    cin.ignore();
-    cout <<"\nEnter your full name (EX: JUAN DELA CRUZ): ";
+    system("cls");
+    design.secondBorder();
+    design.menuScreen();
+    design.registration();
+
+    //*Lagay statement of agreement
+    cin.ignore();//gotoxy(57,22);
+    gotoxy(47,23);cout <<"Enter your full name (EX: JUAN DELA CRUZ): ";
+    //*Lagay if hindi Uppercase
     getline(cin, regInfo.name);
-
-    do{
-        cout <<"\nEnter your Age: ";
-        cin >>regInfo.age;
-        if(regInfo.age<18){
-            system("cls:"); cout <<"\nRegular account users must be 18 years old and above.";
-            cout<< "\nEnrollment for custodial or joint bank account must be processed in the main office.\n\n";
-            system("pause"); removeCard(); exit(0);
-        }
-    }while(regInfo.age<18);
-
-    cout <<"\nEnter your Birthday (EX: MARCH 29, 1999): ";
+    gotoxy(47,26);cout <<"Enter your Age: ";
+    cin >>regInfo.age;
+    //*IF BELOW 18
+    gotoxy(47,29);cout <<"Enter your Birthday (EX: MARCH 29, 1999): ";
+    //*Lagay if hindi Uppercase
     cin.ignore();
     getline(cin, regInfo.birthday);
-    cout <<"\nEnter your Cellphone number: ";
+    gotoxy(47,32);cout <<"Enter your Cellphone number: ";
     cin >>regInfo.number;
 
-    //initialPin= " ";                                        //pang-reset ng value ng initialPin
-    do{                                                     //hanggat hindi nag-match, ulit sa ask pincode.
+    initialPin= " ";                                        //pang-reset ng value ng initialPin
+    while(initialPin!=pin){                                 //hanggat hindi nag-match, ulit sa ask pincode.
         system("cls");
-        cout <<"\nEnter 6-digit PIN: ";
+        design.secondBorder(); design.menuScreen(); design.registration();
+        gotoxy(53,27);cout <<WHITE"Enter 6-digit PIN: ";
         pincode();                                          //mag-enter ng PIN
-        initialPin=pin;                                     //sinalin si pin sa initialPin na string.
-        cout <<"\nRe-enter 6-digit PIN :";
+        initialPin=pin;
+        //sinalin si pin sa initialPin na string.
+        gotoxy(53,29);cout <<WHITE"Re-enter 6-digit PIN: ";
         pincode();
-        if(initialPin!=pin){cout <<"\nPIN does not match.\n"; system("pause");}
-    }while(initialPin!=pin);
+        //*LAGAY NG COMMENT KAPAG DI NAG-MATCH
+    }
 
     while(amount < 1000){
         system("cls");
-        cout <<"\nInitial deposit must be at least 1000";
-        cout <<"\nEnter amount of initial deposit: ";
+        design.secondBorder(); design.menuScreen(); design.registration();
+        gotoxy(53,27);cout <<RED"Initial deposit must be at least 1000";
+        gotoxy(53,29);cout <<WHITE"Enter amount of initial deposit: ";
         cin >>amount;
     }
 
@@ -583,11 +620,16 @@ char name;
     intAccNum= rand() %99999999 +10000000;
     accNum= to_string(intAccNum);
     system("cls");
-    cout <<"\n\tYOUR ACCOUNT DETAILS\n";
-    cout <<"\nAccount number: " <<accNum <<"\nName: " <<regInfo.name <<"\nBalance: " <<balance;
-    cout <<"\n\nAccount successfully registered!";
-    cout <<"\nAlways keep your account details.\n";
-    system("pause");
+    design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();
+
+    system("cls"); design.secondBorder(); design.homeTitle(); design.otherScreen(); design.accDetails();
+
+    gotoxy(64,33);cout <<"Account number: " <<WHITE<<accNum;
+    gotoxy(64,34);cout <<"Name: " <<WHITE<<regInfo.name;
+    gotoxy(64,35);cout <<"Balance: " <<WHITE<<balance;
+    gotoxy(40,38);cout <<"Account successfully registered! " <<"Always keep your account details.";
+    gotoxy(60,45);system("pause");
+
 }
 
 void ATM:: pincode(){                                           //ginagawa niyang asterisk yung PIN
@@ -869,14 +911,18 @@ string enteredPin;
 
     while(enteredPin!=pin && tries<3){       //hanggang di pa correct pin at di pa blocked
         system("cls");
-        cout <<"\nEnter 6-digit pin: ";
+        design.secondBorder();
+        design.homeTitle();
+        gotoxy(60,30); cout <<"Enter 6-digit pin: ";
         pincode();
         enteredPin=pin;
         retrievePincode();
         decrypt();
         if(enteredPin!=pin){                 //kapag mali ang pin
-            cout <<"\nIncorrect pin!\n";
-            tries++; system("pause");        //madadagdagan ang number of tries
+            SetConsoleTextAttribute(m,4);
+            gotoxy(60,33); cout <<"Incorrect pin!";
+            SetConsoleTextAttribute(m,15);
+            tries++; gotoxy(60,34); system("pause");        //madadagdagan ang number of tries
         }
     }
 
@@ -926,15 +972,44 @@ void putComma(){
     cout << std::setprecision(2) << std::fixed;
 }
 
+HWND WINAPI GetConsoleWindowNT(void)
+{
+    //declare function pointer type
+    typedef HWND WINAPI(*GetConsoleWindowT)(void);
+    //declare one such function pointer
+    GetConsoleWindowT GetConsoleWindow;
+    //get a handle on kernel32.dll
+    HMODULE hk32Lib = GetModuleHandle(TEXT("KERNEL32.DLL"));
+    //assign procedure address to function pointer
+    GetConsoleWindow = (GetConsoleWindowT)GetProcAddress(hk32Lib
+    ,TEXT("GetConsoleWindow"));
+    //check if the function pointer is valid
+    //since the function is undocumented
+    if(GetConsoleWindow == NULL){
+        return NULL;
+    }
+    //call the undocumented function
+    return GetConsoleWindow();
+}
+
+
+void setFontStyle(int FontSize){
+    CONSOLE_FONT_INFOEX cfi;
+    cfi.cbSize = sizeof(cfi);
+    cfi.nFont = 0;
+    cfi.dwFontSize.X = 0;                   // Width of each character in the font
+    cfi.dwFontSize.Y = FontSize;                  // Height
+    cfi.FontFamily = FF_DONTCARE;
+    cfi.FontWeight = FW_NORMAL;
+    std::wcscpy(cfi.FaceName, L"Consolas"); // font style
+    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+}
+
+
 void gotoxy(int x,int y){
     COORD coord = {0,0};
     coord.X=x;
     coord.Y=y;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
 }
-
-
-
-
-
 
