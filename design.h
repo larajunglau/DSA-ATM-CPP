@@ -24,6 +24,7 @@ class design
         otherScreen();
         boxes();
         accDetails();
+        statement();
 
 
 };

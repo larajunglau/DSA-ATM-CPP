@@ -287,4 +287,26 @@ design:: boxes(){ //kasya sa other screen
      gotoxy(55,37);cout <<WHTBG" --------------------------- ";
 }
 
+design:: statement(){
+
+    gotoxy(35,19); cout <<R"(
+
+                            Terms of Use and Privacy Statement
+
+                            I hereby declare that the information provided is true and correct. I also understand that any
+                            willful dishonesty may render for termination of this bank account.
+
+                            I authorize Put To Bank - Manila to keep this information in my personal file, and the
+                            management’s database for the sole purpose of bank transactions.
+
+                            I also understand I am entitled to update and correct the above information and agree that
+                            this information could be held for 3 months from the date of enrollment and used for future
+                            assessment of the bank.
+                             __
+                            |__| I certify that I have read and accept the Terms of Use and Privacy Statement and I have
+                                read and understand the legal rules and regulations of the bank.
+
+    )";
+
+}
 

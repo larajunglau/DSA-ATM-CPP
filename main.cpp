@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <string>
 #include <windows.h>
+#include <algorithm>
 #include "design.h"
 #define RED "\033[31m"
 #define WHITE"\033[37m"
@@ -202,7 +203,7 @@ int ch;
             savePincode();
             addAccount();
             saveAllAccounts();
-            //removeCard(); exit(0);
+            system("cls"); removeCard(); exit(0);
 
         }
         else if(ch==2){gotoxy(39,41);system(RESET"pause");removeCard(); exit(0);}
@@ -213,7 +214,6 @@ int ch;
         }
     }
     else{                                        //kung may laman na or registered na card
-        //askPin();
         retrievePincode();                      //para before tawagin si findAccount, refreshed ang accNum.
     }
 }
@@ -233,7 +233,6 @@ int choice;
             gotoxy(50,24); cout <<"Date: "; Date(); cout <<dt;
             gotoxy(50,28); cout <<"Account Number: " << p->accNum;
             gotoxy(50,30); cout <<"Account Balance: "<< p->balance;
-            gotoxy(60,45); system("pause");
         }
         else if(choice==2){
             saveReceipt();
@@ -261,10 +260,10 @@ int temp, ch, i;
             gotoxy(45,35); cout <<RED <<"This machine can only dispense 100, 500, and 1000 bills!" <<WHITE;
             gotoxy(60,45); system("pause");}
         else if(amount > (p->balance-500)){
-            gotoxy(45,35); cout <<RED <<"Insufficient balance!\n" <<WHITE;
+            gotoxy(60,35); cout <<RED <<"Insufficient balance!\n" <<WHITE;
             gotoxy(60,45); system("pause");}
         else if(amount > 20000){
-            gotoxy(45,35); cout <<RED <<"Amount must not exceed P20,000" <<WHITE;
+            gotoxy(60,35); cout <<RED <<"Amount must not exceed P20,000" <<WHITE;
             gotoxy(60,45);system("pause");}
     }
     system("cls"); askPin(); system("cls");
@@ -276,7 +275,7 @@ int temp, ch, i;
     askReceipt();
 
     removeCard();                           //take ATM
-    gotoxy(62,38); cout <<"Please take your cash.\n";    //take cash
+    gotoxy(60,38); cout <<"Please take your cash.";    //take cash
 
     Date();
     if(chR==1){saveReceipt();}               //take receipt
@@ -522,29 +521,56 @@ int ch;
 void ATM:: saveReceipt(){
 fstream receiptFP;
 receiptFP.open("receipt.txt", ios::out);   //out kapag magpi-print sa file
+char accNum[8];
 
     if(!receiptFP){
-        cout <<"receipt.txt do not exist!\n";;
+        gotoxy(60,40); cout <<"receipt.txt do not exist!\n";;
         system("pause");
     }
 
-    receiptFP <<"\tTITLE NG BANK\n";
-    receiptFP <<dt <<"\n\n";
-    receiptFP <<"Transaction Type: " <<type <<"\n";
-    receiptFP <<"Account Number: " <<p->accNum <<"\n";
+    receiptFP <<R"(
+
+ __| |________________________________________________| |__
+(__   ________________________________________________   __)
+   | |                                                | |
+
+                    PUT TO BANK - Manila
+                The  Bank  of  the  Greyhawks
+     Ayala Blvd.,San Marcelino St., Ermita, Manila 1000
+    ====================================================
+    )";
+
+    receiptFP <<"\n\t\t\t" <<dt <<"\n";
+    receiptFP <<"\n\t\t\tTransaction Type:\t\t\t" <<type;
+    receiptFP <<"\n\t\t\tAccount Number:\t\t\t\t" <<p->accNum;
+
     if(option==2 ||option==3 ||option==4 ){
-        receiptFP <<"Amount: " <<std::setprecision(2) << std::fixed <<amount <<"\n";
+        receiptFP <<"\n\t\t\tAmount:\t\t\t\t\t\t" <<std::setprecision(2) << std::fixed <<amount <<"\n";
     }
     if(option==4){
-        receiptFP <<"Recipient's account number: " <<r->accNum <<"\n";
+        receiptFP <<"\t\t\tRecipient's account number:\t\t\t" <<r->accNum <<"\n";
     }
 
-    receiptFP <<"Account Balance: " ;
+    receiptFP <<"\t\t\tAccount Balance:\t\t\t" ;
     receiptFP <<std::setprecision(2) << std::fixed <<p->balance <<"\n";
 
-    cout <<"\nCheck your receipt in receipt.txt.\n";
-    system("pause");
-    receiptFP <<"\nThank you for banking with us!";
+
+    receiptFP <<R"(
+    ====================================================
+
+      Thank you for banking with PUT TO BANK - Manila!
+         Visit Us Online: www.puttobank.com or Call
+          our Customer Service Line: 111-2445-345
+                    Padayon mga PUTO!
+ __| |________________________________________________| |__
+(__   ________________________________________________   __)
+   | |                                                | |
+
+
+    )";
+
+    gotoxy(60,40); cout <<"Check your receipt in receipt.txt.\n";
+    gotoxy(60,45); system("pause");
 
 receiptFP.close();
 }
@@ -555,7 +581,7 @@ FILE *pinFP;
     design.secondBorder();
     design.homeTitle();
     design.usb();
-    gotoxy(65, 34); cout <<"Please remove card...";
+    gotoxy(60, 36); cout <<"Please remove card...";
 
     do{
         pinFP=fopen("D:\pincode.txt","r");
@@ -570,7 +596,6 @@ void ATM:: registration(){
 string initialPin;
 int intAccNum;
 
-    //*Lagay statement of agreement
     system("cls");
     design.secondBorder();
     design.menuScreen();
@@ -611,6 +636,9 @@ int intAccNum;
         gotoxy(53,29);cout <<WHITE"Enter amount of initial deposit: ";
         cin >>amount;
     }
+
+    system("cls"); design.secondBorder(); design.menuScreen(); design.registration();
+    design.statement(); gotoxy(30,33); getch(); cout <<"O"; gotoxy(60,45); system("pause");
 
     balance= amount;
     srand(time(NULL));
