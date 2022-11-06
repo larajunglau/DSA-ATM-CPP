@@ -24,6 +24,8 @@ class design
         otherScreen();
         boxes();
         accDetails();
+        menuboxes();
+        otherTransac();
         statement();
 
 

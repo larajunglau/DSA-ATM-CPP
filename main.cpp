@@ -132,19 +132,22 @@ int choice;
             case 3:
                 system("cls");
                 atm.askPin(); system("cls");
-                design.secondBorder(); design.deposit();
+                design.secondBorder(); design.deposit();design.menuScreen();
                 atm.deposit(); break;
             case 4:
                 system("cls");
-                design.secondBorder(); design.fundTransfer();
+                atm.askPin(); system("cls");
+                design.secondBorder(); design.fundTransfer();design.menuScreen();
                 atm.fundTransfer(); break;
             case 5: system("cls");
-                cout <<"\nOTHER TRANSACTIONS\n";
-                cout <<"\n(1) Transaction History";
-                cout <<"\n(2) Change PIN";
-                cout <<"\n\nEnter choice: ";
+                design.secondBorder(); design.otherTransac();design.otherScreen();
+                design.boxes();
+                gotoxy(29,32);cout <<RED"(1) Transaction History";
+                gotoxy(94,32);cout <<RED"(2) Change PIN";
+                gotoxy(62,36);cout <<RED"Enter choice: ";
                 cin >>choice;
-                switch(choice){
+                system(RESET);
+                switch(choice){;
                     case 1:
                         system("cls");
                         atm.askPin(); system("cls");
@@ -152,15 +155,16 @@ int choice;
                         atm.displayHistory(); break;
                     case 2:
                         system("cls");
-                        design.secondBorder(); design.changePin();
+                        design.secondBorder(); design.changePin();design.menuScreen();
                         atm.changePin(); break;
-                    default: cout <<"\nInvalid Transaction: Enter only numbers from 1-2\n"; system("pause");
+                    default: gotoxy(51,44);cout <<"Invalid Transaction: Enter only numbers from 1-2\n"; gotoxy(60,45);system("pause");
                 }
 
                 break;
 
+
             case 6: system("cls"); atm.removeCard(); exit(0); break;
-            default: cout <<"\nInvalid Transaction: Enter only numbers from 1-6\n";  system("pause");
+            default: gotoxy (50, 46); cout <<RED <<"Invalid Transaction: Enter only numbers from 1-6\n" <<WHITE; gotoxy (50, 47);system("pause");
         }
     }
 return 0;
@@ -208,9 +212,8 @@ int ch;
         }
         else if(ch==2){gotoxy(39,41);system(RESET"pause");removeCard(); exit(0);}
         else{
-                gotoxy(82,42);cout<<RESET<<WHITE"Invalid Transaction: Enter only numbers from 1-2\n";gotoxy(90,43);system("pause");
-                system("cls");
-                exit(0);
+                gotoxy(50,42); cout<<RESET<<RED"Invalid Transaction: Enter only numbers from 1-2\n" <<WHITE;
+                gotoxy(50,43); system("cls"); exit(0);
         }
     }
     else{                                        //kung may laman na or registered na card
@@ -220,7 +223,7 @@ int ch;
 
 void ATM:: balInquiry(){
 int choice;
-
+    system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();
     system("cls"); design.secondBorder(); design.menuScreen(); design.balInquiry();
     type ="Balance Inquiry";
     gotoxy(33,32); cout<< "(1) Show balance on screen";
@@ -247,6 +250,7 @@ int choice;
 void ATM:: withdrawal(){
 int temp, ch, i;
 
+    system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();
     type= "Withdrawal";
     while(temp %100!=0 || amount > (p->balance-500) || amount > 20000){
         system("cls"); design.secondBorder(); design.menuScreen(); design.withdrawal();
@@ -278,7 +282,7 @@ int temp, ch, i;
     gotoxy(60,38); cout <<"Please take your cash.";    //take cash
 
     Date();
-    if(chR==1){saveReceipt();}               //take receipt
+    if(chR==1){gotoxy(60,40); saveReceipt();}               //take receipt
     saveAllAccounts();
     addHistory();
     saveHistory();
@@ -288,116 +292,127 @@ void ATM:: deposit(){
 int temp, ch, i;
 float thou, fivehun, twohun, onehun;
 
+    system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();
     type= "Deposit";
-    cout <<"\tCASH DEPOSIT\n\n";
-    cout <<"This machine can only accept 100, 200, 500, and 1000 bills\n\n";
-    system("pause");
 
     system("cls");
-    cout <<"\tCASH DEPOSIT\n\n";
-    cout <<"\nEnter number of pieces of your P1,000 bills: ";
+    system("cls"); design.secondBorder(); design.deposit();design.menuScreen();
+
+    gotoxy(45,22);cout <<"NOTE: This machine can only accept 100, 200, 500, and 1000 bills";
+    gotoxy(47,26);cout <<"Enter number of pieces of your P1,000 bills: ";
     cin >>thou;
-    cout <<"\nEnter number of pieces of your P500 bills: ";
+    gotoxy(47,28);cout <<"Enter number of pieces of your P500 bills: ";
     cin >>fivehun;
-    cout <<"\nEnter number of pieces of your P200 bills: ";
+     gotoxy(47,30);cout <<"Enter number of pieces of your P200 bills: ";
     cin >>twohun;
-    cout <<"\nEnter number of pieces of your P100 bills: ";
+     gotoxy(47,32);cout <<"Enter number of pieces of your P100 bills: ";
     cin >>onehun;
     amount=( (1000*thou)+(500*fivehun)+(200*twohun)+(100*onehun));
 
     do{
         system("cls");
-        cout <<"AMOUNT DENOMINATION\n";
-        cout <<"\n1,000 x " <<std::setprecision(0) << std::fixed <<thou <<" = " <<std::setprecision(2) << std::fixed <<1000*thou;
-        cout <<"\n500 x " <<std::setprecision(0) << std::fixed<<fivehun <<" = " <<std::setprecision(2) << std::fixed<<500*fivehun;
-        cout <<"\n200 x " <<std::setprecision(0) << std::fixed<<twohun <<" = " <<std::setprecision(2) << std::fixed<<200*twohun;
-        cout <<"\n100 x " <<std::setprecision(0) << std::fixed<<onehun <<" = " <<std::setprecision(2) << std::fixed<<100*onehun;
-        cout <<"\n______________________________________";
-        cout <<"\nTOTAL AMOUNT: " <<amount;
+        design.secondBorder(); design.deposit();design.menuScreen();
+        gotoxy(63,23);cout <<"AMOUNT DENOMINATION\n";
+        gotoxy(63,26);cout <<"1,000 x " <<std::setprecision(0) << std::fixed <<thou <<" = " <<std::setprecision(2) << std::fixed <<1000*thou;
+        gotoxy(63,28);cout <<"500 x " <<std::setprecision(0) << std::fixed<<fivehun <<" = " <<std::setprecision(2) << std::fixed<<500*fivehun;
+        gotoxy(63,30);cout <<"200 x " <<std::setprecision(0) << std::fixed<<twohun <<" = " <<std::setprecision(2) << std::fixed<<200*twohun;
+        gotoxy(63,32);cout <<"100 x " <<std::setprecision(0) << std::fixed<<onehun <<" = " <<std::setprecision(2) << std::fixed<<100*onehun;
+        gotoxy(53,34);cout <<"______________________________________";
+        gotoxy(60,36);cout <<"TOTAL AMOUNT: " <<amount;
+        gotoxy(60,45); system("pause");
 
         if(amount > 50000){
-            cout <<"\nDeposit amounts larger than P50,000 must be proccessed over the counter\n\n";
-            system("pause");
+            gotoxy(60,40);cout <<"Deposit amounts larger than P50,000 must be proccessed over the counter";
+            gotoxy(60,45);system("pause");
             deposit();}
 
-        cout <<"\n\n(1) CONFIRM";
-        cout <<"\n(2) BACK";
-        cout <<"\n\nEnter your choice: ";
+        system("cls"); design.secondBorder(); design.deposit();design.otherScreen();
+        design.boxes();
+        gotoxy(33,32);cout <<RED"(1) CONFIRM";
+        gotoxy(97,32);cout <<RED"(2) BACK";
+        gotoxy(59,36);cout <<RED"Enter your choice: ";
         cin >>ch;
-        if(ch!=1 && ch!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
+        gotoxy(60,45); system("pause"RESET);
+        if(ch!=1 && ch!=2){
+                gotoxy(51,43);cout <<"Invalid Transaction: Enter only a number from 1-2";gotoxy(60,45); system("pause");}
     }while(ch!=1 && ch!=2);
 
     if(ch==2){system("cls"); deposit();}
     else{
         system("cls");
-        cout <<"\nAmout of " << amount <<" will be deposited to your account.\n" <<endl; system("pause");
+        design.secondBorder(); design.deposit();design.menuScreen();
+        gotoxy(45,27);cout <<"Amount of " << amount <<" will be deposited to your account." <<endl;gotoxy(60,45);system("pause");
         p->balance+= amount;                                //ipa-plus yung amount sa balance
         recipient="N/A";
         askReceipt();
 
-        for(i=0; i<50; i++){                                //para lang mag-display ng loading keme
-            system("cls");
-            cout <<"\nPlease wait while we process this transaction...\n";
-        }
+        system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();         //for all loadings
 
-        cout <<"\nCash deposited successfully.\n";  system("pause");
-        cout <<"\nPlease check your account balance.\n"; system("pause"); //take cash
+        system("cls");
+        design.secondBorder(); design.deposit();design.menuScreen();
+        gotoxy(60,28);cout <<"Cash deposited successfully.";
+        gotoxy(57,30);cout <<"Please check your account balance.\n";  gotoxy(60,45);system("pause"); //take cash
 
         Date();
-        if(chR==1){saveReceipt();}                          //take receipt
+        if(chR==1){gotoxy(50,32); saveReceipt();}                          //take receipt
         saveAllAccounts();
         addHistory();
         saveHistory();
         askToExit();
     }
 }
+
 void ATM:: fundTransfer(){
 int temp, ch, i;
 
     type= "Fund Transfer";
-    cout <<"\tFUND TRANSFER\n\n";
-
     do{
-        system("cls");
-        cout <<"\tFUND TRANSFER\n\n";
-        cout<<"\nEnter recipient's Account number: ";
+
+        gotoxy(55,27);cout<<"Enter recipient's Account number: ";
         cin >> accNum;
         findRecipient();
-        if(r==NULL){cout <<"\nAccount number does not exist.\n";
-            system("pause");}
+        if(r==NULL){
+            gotoxy(58,29);cout <<RED"Account number does not exist."<<WHITE;
+            gotoxy(60,45);system("pause");system("cls");
+            design.secondBorder(); design.fundTransfer();design.menuScreen();
+            fundTransfer();}
     }while(r==NULL);
 
     while(temp %100!=0 || amount > (p->balance-500)){
         system("cls");
-        cout <<"\tFUND TRANSFER\n\n";
-        cout<<"\nEnter recipient's Account number: " <<accNum;
-        cout <<"\nEnter amount: ";
+        design.secondBorder(); design.fundTransfer();design.menuScreen();
+        gotoxy(55,27);cout<<"Enter recipient's Account number: " <<accNum;
+        gotoxy(55,29);cout <<"Enter amount: ";
         cin >> amount;
         temp=(int) amount;                                  //store sa int varabiale ang amount para magamit modulo.
 
         if(temp %100!=0){
-            cout <<"\nThis machine can only transfer 100, 500, and 1000 bills\n\n";
-            system("pause");}
+             gotoxy(45,27);cout <<"This machine can only transfer 100, 500, and 1000 bills";
+             gotoxy(60,45);system("pause");}
         else if(amount > (p->balance-500)){
-            cout <<"\nInsufficient balance!\n";
-            system("pause");}
+             gotoxy(50,24);cout <<RED <<"Transaction Error: Insufficient balance!" <<WHITE;
+             gotoxy(60,45);system("pause");}
     }
 
     do{
         system("cls");
-        cout <<"\tFUND TRANSFER\n\n";
-        cout <<"Your account number: " <<p->accNum <<"\n";
-        cout <<"Recipient's account number: " <<r->accNum <<"\n";
-        cout <<"Recipient's name: " <<r->name <<"\n";
-        cout <<"Amount to transfer: "; putComma(); cout <<amount <<"\n";
+        design.secondBorder(); design.fundTransfer();design.menuScreen();
+        gotoxy(56,25);cout <<"Your account number: " <<p->accNum <<"\n";
+        gotoxy(56,27);cout <<"Recipient's account number: " <<r->accNum <<"\n";
+        gotoxy(56,29);cout <<"Recipient's name: " <<r->name <<"\n";
+        gotoxy(56,31);cout <<"Amount to transfer: "; putComma(); cout <<amount <<"\n";
+        gotoxy(60,45);system("pause");
 
-        cout <<"\n(1) CONFIRM";
-        cout <<"\n(2) BACK";
-        cout <<"\n\nEnter your choice: ";
-        cin >> ch;
-        if(ch!=1 && ch!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
+        system("cls");
+        design.secondBorder(); design.fundTransfer();design.otherScreen();
+        design.boxes();
+        gotoxy(33,32);cout <<RED"(1) CONFIRM";
+        gotoxy(97,32);cout <<RED"(2) BACK";
+        gotoxy(59,36);cout <<RED"Enter your choice: ";
+        cin >>ch;
+        gotoxy(60,45);system("pause"RESET);
+        if(ch!=1 && ch!=2){cout <<RED <<"\nInvalid Transaction: Enter only a number from 1-2" <<WHITE; gotoxy(60,45);system("pause");}
     }while(ch!=1 && ch!=2);
-    askPin();
 
     if(ch==1){
         system("cls");
@@ -405,16 +420,15 @@ int temp, ch, i;
         r->balance+= amount;                            //ia-add yung amount sa balance ni recipient
         askReceipt();
 
-        for(i=0; i<50; i++){                            //para lang mag-display ng loading keme
-            system("cls");
-            cout <<"\nPlease wait while we process this transaction...\n";
-        }
+        system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();         //for all loadings
 
-        cout <<"\nFunds transferred successfully."; system("pause");
-        cout <<"\nPlease check your account balance.\n"; system("pause");
+        system("cls");
+        design.secondBorder(); design.deposit();design.menuScreen();
+        gotoxy(50,28);cout <<"Funds transferred successfully.";
+        gotoxy(50,30);cout <<"Please check your account balance.";
 
         Date();
-        if(chR==1){saveReceipt();}                      //take receipt
+        if(chR==1){gotoxy(50,32); saveReceipt();}                      //take receipt
         saveAllAccounts();
         recipient=r->name;
         addHistory();
@@ -430,35 +444,37 @@ void ATM:: changePin(){
 string pinEntered,newPin,reEnterPin;
 int tries=0;
 
-    cout<< "\tCHANGE PINCODE\n\n";
     while(pinEntered!=pin && tries<3){                          //hanggat di equal ang pinentered sa pin di pa less than 3 tries
             system("cls");
-            design.secondBorder(); design.changePin();
-            cout<< "\t ENTER CURRENT PIN CODE TO CHANGE PINCODE\n\n";
-            cout<<"\nEnter your current PIN: ";
+            design.secondBorder(); design.changePin();design.menuScreen();
+            gotoxy(53,27);cout<<RED"ENTER CURRENT PIN CODE TO CHANGE PINCODE";
+            gotoxy(58,29);cout<<WHITE"Enter your current PIN: ";
             pincode();
             pinEntered=pin;
             retrievePincode();
             decrypt();
             if(pinEntered!=pin){
-                 cout <<"\nIncorrect PIN!\n";
+                 gotoxy(65,31);cout<<RED"Incorrect PIN!";
                  tries++;
-                 system("pause");                               //madadagdagan ang number of tries
+                 gotoxy(60,45);system("pause");                               //madadagdagan ang number of tries
             }
             if(tries==3){                                       //kapag na-block na
-            cout <<"\nYour account was blocked!\n"; system("pause");
+            system("cls");
+            design.secondBorder(); design.changePin();design.menuScreen();
+            gotoxy(60,27);cout <<"Your account was blocked!";
+            gotoxy(60,45);system("pause");
              removeCard();exit(0);
                                                                 //balik sa homepage.
             }
     }
     do{
-        system("cls");                                  //gagawin ito hanggat hindi equal yung newPin at reEnterPin
-        cout<< "\tCHANGE PINCODE\n";
-        cout<<"\n\nEnter your new 6-digit PIN: ";       // enter new pin
+        system("cls");
+        design.secondBorder(); design.changePin();design.menuScreen();                                 //gagawin ito hanggat hindi equal yung newPin at reEnterPin
+        gotoxy(53,27);cout<<"Enter your new 6-digit PIN: ";       // enter new pin
         pincode();
         newPin=pin;                                     //inistore yung pin sa variable newPin
 
-        cout<<"\nRe-enter new 6-digit PIN: ";           //re- enter pin
+        gotoxy(53,29);cout<<"Re-enter new 6-digit PIN: ";           //re- enter pin
         pincode();
         reEnterPin=pin;                                 //inistore yung pin sa variable reEnterPin
     }while(newPin!=reEnterPin);
@@ -466,8 +482,8 @@ int tries=0;
     if(pin==newPin){
     encrypt();
     savePincode();
-    cout<<"\n\nPin code has been successfully changed.\n";
-    system("pause");
+    gotoxy(50,32);cout<<RED"Pin code has been successfully changed.\n";
+    gotoxy(60,45);system("pause");
     askToExit();
     }
 }
@@ -477,41 +493,52 @@ void ATM::displayHistory(){
 HISTORY *p;
 int i=1;
 
+    gotoxy(14,22);cout<<" _________________________________ _________________ ___________________ ___________ ______________ ______________ ";
+    gotoxy(14,23);cout<<"|             DATE                |       TYPE      |   ACCOUNT NUMBER  |   AMOUNT  |   RECIPIENT  |   BALANCE    |";
+    gotoxy(14,24);cout<<"|_________________________________|_________________|___________________|___________|______________|______________|";
     p=headH;
-    cout <<"\tTRANSACTION HISTORY\n\n";
     while(p!=NULL){
-        cout <<p->dateTime <<"\n";
-        cout <<"Transaction type: " <<p->type <<"\n";
-        cout <<"Your account number: " <<p->accNum <<"\n";
-        cout <<"Amount: " <<p->amount <<"\n";
-        cout <<"Recipient: " <<p->recipient <<"\n";
-        cout <<"Balance: " <<p->balance <<"\n\n";
+        gotoxy(15,24+i);cout <<p->dateTime;
+        gotoxy(50,24+i);cout<<p->type;
+        gotoxy(72,24+i);cout<<p->accNum;
+        gotoxy(90,24+i);cout<<p->amount;
+        gotoxy(102,24+i);cout<<p->recipient;
+        gotoxy(117,24+i);cout<<p->balance;
+        i++;
         p=p->nxt;
     }
-    system("pause");
+    gotoxy(60,45);system("pause");
 }
 
 void ATM:: askReceipt(){
     do{
         system("cls");
-        cout <<"Do you want a printed receipt?";
-        cout <<"\n\n(1) YES" <<"\n(2) NO";
-        cout <<"\n\nEnter your choice: ";
+        design.secondBorder();design.homeTitle();design.otherScreen();
+         gotoxy(55,28);cout <<"Do you want a printed receipt?";
+        design.boxes();
+        gotoxy(33,32);cout <<RED"(1) YES";
+        gotoxy(97,32);cout <<RED"(2) NO";
+        gotoxy(59,36);cout <<RED"Enter your choice: ";
         cin >> chR;
-        if(chR!=1 && chR!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
-    }while(chR!=1 && chR!=2);
+        gotoxy(60,45); system("pause"RESET);
+        if(chR!=1 && chR!=2){
+                gotoxy(51,43);cout<<"Invalid Transaction: Enter only a number from 1-2"; gotoxy(60,45);system("pause");}
+       }while(chR!=1 && chR!=2);
 }
 
 void ATM:: askToExit(){
 int ch;
     do{
         system("cls");
-        cout <<"Do you want to do another transaction?";
-        cout <<"\n\n(1) YES";
-        cout <<"\n(2) EXIT";
-        cout <<"\n\nEnter your choice: ";
+        design.secondBorder();design.homeTitle();design.otherScreen();
+        gotoxy(55,28);cout <<"Do you want to do another transaction?";
+        design.boxes();
+        gotoxy(33,32);cout <<RED"(1) YES";
+        gotoxy(97,32);cout <<RED"(2) EXIT";
+        gotoxy(59,36);cout <<RED"Enter your choice: ";
         cin >> ch;
-        if(ch!=1 && ch!=2){cout <<"\nInvalid Transaction: Enter only a number from 1-2\n"; system("pause");}
+        gotoxy(60,45); system("pause"RESET);
+        if(ch!=1 && ch!=2){cout<<"Invalid Transaction: Enter only a number from 1-2";gotoxy(60,45);system("pause");}
     }while(ch!=1 && ch!=2);
 
     if(ch==1){return;}
@@ -548,7 +575,7 @@ char accNum[8];
         receiptFP <<"\n\t\t\tAmount:\t\t\t\t\t\t" <<std::setprecision(2) << std::fixed <<amount <<"\n";
     }
     if(option==4){
-        receiptFP <<"\t\t\tRecipient's account number:\t\t\t" <<r->accNum <<"\n";
+        receiptFP <<"\t\t\tRecipient's account number:\t\t" <<r->accNum <<"\n";
     }
 
     receiptFP <<"\t\t\tAccount Balance:\t\t\t" ;
@@ -569,7 +596,7 @@ char accNum[8];
 
     )";
 
-    gotoxy(60,40); cout <<"Check your receipt in receipt.txt.\n";
+    cout <<"Check your receipt in receipt.txt.\n";
     gotoxy(60,45); system("pause");
 
 receiptFP.close();
@@ -577,38 +604,45 @@ receiptFP.close();
 
 void ATM:: removeCard(){                    //in C   //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
 FILE *pinFP;
-
-    design.secondBorder();
-    design.homeTitle();
-    design.usb();
-    gotoxy(60, 36); cout <<"Please remove card...";
-
+     system("cls");
+     design.secondBorder();design.homeTitle();design.usb();
+     gotoxy(67,36);cout<<RED"Please remove card...";
     do{
         pinFP=fopen("D:\pincode.txt","r");
     } while(pinFP!=NULL);
 
+    design.loadingBar();
     fclose(pinFP);
-    gotoxy(60, 42); cout <<"Thank you for banking with us!\n";
-    gotoxy(60, 45); system("pause");
+    gotoxy(63,40);cout <<"Thank you for banking with us!";
+    gotoxy(60,45);system("pause");
+    gotoxy(60,47);
 }
 
 void ATM:: registration(){
 string initialPin;
 int intAccNum;
+char ch;
 
     system("cls");
     design.secondBorder();
     design.menuScreen();
     design.registration();
 
-    //*Lagay statement of agreement
     cin.ignore();//gotoxy(57,22);
     gotoxy(47,23);cout <<"Enter your full name (EX: JUAN DELA CRUZ): ";
-    //*Lagay if hindi Uppercase
     getline(cin, regInfo.name);
-    gotoxy(47,26);cout <<"Enter your Age: ";
-    cin >>regInfo.age;
-    //*IF BELOW 18
+    //*Lagay if hindi Uppercase
+
+    do{
+        gotoxy(47,26);cout <<"Enter your Age: ";
+        cin >>regInfo.age;
+        if(regInfo.age<18){
+            gotoxy(40,32); cout <<RED <<"Regular account users must be 18 years old and above.";
+            gotoxy(40,33); cout <<WHITE "Enrollment for custodial or joint bank account must be processed in the main office.\n\n";
+            gotoxy(60, 45);system("pause"); removeCard(); exit(0);
+        }
+    }while(regInfo.age<18);
+
     gotoxy(47,29);cout <<"Enter your Birthday (EX: MARCH 29, 1999): ";
     //*Lagay if hindi Uppercase
     cin.ignore();
@@ -632,13 +666,16 @@ int intAccNum;
     while(amount < 1000){
         system("cls");
         design.secondBorder(); design.menuScreen(); design.registration();
-        gotoxy(53,27);cout <<RED"Initial deposit must be at least 1000";
+        gotoxy(53,27);cout <<RED"NOTE: Initial deposit must be at least 1000";
         gotoxy(53,29);cout <<WHITE"Enter amount of initial deposit: ";
         cin >>amount;
     }
 
     system("cls"); design.secondBorder(); design.menuScreen(); design.registration();
-    design.statement(); gotoxy(30,33); getch(); cout <<"O"; gotoxy(60,45); system("pause");
+    design.statement();
+    gotoxy(50, 43); cout <<"Enter 'Y' to continue, otherwise press any key. ";
+    gotoxy(30,33); cin >>ch;
+    if(ch!='Y' && ch!='y'){removeCard(); exit(0);}
 
     balance= amount;
     srand(time(NULL));
@@ -685,7 +722,8 @@ char ch;
 
     if (index <5){
         system("cls");
-        cout <<"\nEnter 6-digit pin: ";
+        design.secondBorder(); design.otherScreen(); design.homeTitle();
+        gotoxy(60,32);cout <<"Enter 6-digit pin: ";
         pincode();
     }
 }
@@ -966,19 +1004,23 @@ void ATM::makeNull(){
 int ATM:: menu(){
 
     system("cls");
-    cout <<"\t\tMENU\n";
-    cout <<"1. Balance Inquiry\n";
-    cout <<"2. Withdrawal\n";
-    cout <<"3. Deposit\n";
-    cout <<"4. Fund Transfer\n";
-    cout <<"5. Other Transactions\n";
-    cout <<"6. Exit\n";
-    cout <<"Enter option (1-6): ";
+    design.secondBorder();
+    design.homeTitle();
+    design.otherScreen();
+    design.menuboxes();
+    gotoxy(32,28);cout <<RED"[1] Balance Inquiry";
+    gotoxy(97,28);cout <<RED"[2] Withdrawal\n";
+    gotoxy(32,32);cout <<RED"[3] Deposit";
+    gotoxy(97,32);cout <<RED"[4] Fund Transfer";
+    gotoxy(32,36);cout <<RED"[5] Other Transactions\n";
+    gotoxy(97,36);cout <<RED"[6] Exit\n";
+    gotoxy(62,43);cout <<"Enter option 1-6: ";
     cin >> option;
+    system(RESET);
     return option;
     if(option > 6 || option <1){
-        cout <<"\nInvalid option\n!";
-        system("pause");
+        gotoxy(60,43);cout <<"Invalid option!";
+        gotoxy(60,45);system("pause");
     }
 }
 
