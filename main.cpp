@@ -390,7 +390,7 @@ int temp, ch, i;
              gotoxy(45,27);cout <<"This machine can only transfer 100, 500, and 1000 bills";
              gotoxy(60,45);system("pause");}
         else if(amount > (p->balance-500)){
-             gotoxy(50,24);cout <<RED <<"Transaction Error: Insufficient balance!" <<WHITE;
+            gotoxy(51,43);cout <<RED <<"Invalid Transaction: Insufficient balance!" <<WHITE;
              gotoxy(60,45);system("pause");}
     }
 
@@ -411,7 +411,7 @@ int temp, ch, i;
         gotoxy(59,36);cout <<RED"Enter your choice: ";
         cin >>ch;
         gotoxy(60,45);system("pause"RESET);
-        if(ch!=1 && ch!=2){cout <<RED <<"\nInvalid Transaction: Enter only a number from 1-2" <<WHITE; gotoxy(60,45);system("pause");}
+        if(ch!=1 && ch!=2){ gotoxy(51,43); cout <<RED <<"\nInvalid Transaction: Enter only a number from 1-2" <<WHITE; gotoxy(60,45);system("pause");}
     }while(ch!=1 && ch!=2);
 
     if(ch==1){
@@ -482,7 +482,7 @@ int tries=0;
     if(pin==newPin){
     encrypt();
     savePincode();
-    gotoxy(50,32);cout<<RED"Pin code has been successfully changed.\n";
+    gotoxy(50,32);cout<<WHITE "Pin code has been successfully changed.\n";
     gotoxy(60,45);system("pause");
     askToExit();
     }
