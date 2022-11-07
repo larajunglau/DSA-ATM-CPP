@@ -15,8 +15,34 @@
 #define WHTBG "\033[107m"
 #define RESET"\033[0m"
 
+/*                          PUT TO BANK - Manila ATM Machine
+
+        -The name of the bank is inspired from the AKAs of the TUPians which is 'PUTO'.
+        -This ATM offers different transactions namely:
+                1. Balance Inquiry
+                2. Withdrawal
+                3. Cash deposit
+                4. Fund transfer
+                5. Other transactions:
+                        1. Transaction History
+                        2. Change PIN
+
+        -Language: C++
+        -Data structure: Linked List
+        -Text Files: allAccounts.txt (System), registration.txt (USB), receipt.txt(USB), history.txt(USB)
+
+
+        Created by:
+            Alcantara, John Paulo C.
+            Ygot, Laica D.
+
+        Year and Section: BSCS-NS-2AB
+        Instructor: Sir. Renegado, Fernando L.
+*/
+
 using namespace std;
 
+//Linked list for all accounts that will be stored in the allAccounts.txt
 typedef struct allAcc{
     string name, accNum;
     int chR;
@@ -24,6 +50,7 @@ typedef struct allAcc{
     struct allAcc *nxt;
 }ALLACC;
 
+//Linked list for transaction history that will be stored in history.txt
 typedef struct history{
     string dateTime;
     string type, accNum, recipient;
@@ -32,6 +59,7 @@ typedef struct history{
     struct history *nxt;
 }HISTORY;
 
+//A struct to store the registration info of the user that will be stored in the registration.txt
 typedef struct regInfo{
     string name, birthday, number;
     int age;
@@ -82,7 +110,8 @@ public:
     int menu();
 };
 
-class comma_numpunct : public std::numpunct<char>      //para sa paglalagay ng comma sa balance
+//A class to put commas on amounts
+class comma_numpunct : public std::numpunct<char>
 {
   protected:
     virtual char do_thousands_sep() const
@@ -92,12 +121,12 @@ class comma_numpunct : public std::numpunct<char>      //para sa paglalagay ng c
     {return "\03";}
 };
 
+//GLOBAL VARIABLES AND PROTOTYPES
 void setFontStyle(int FontSize);
 void gotoxy(int x,int y);
 HWND WINAPI GetConsoleWindowNT(void);
 design design;
-HANDLE m= GetStdHandle(STD_OUTPUT_HANDLE);           //m ang pag-change color sa main
-
+HANDLE m= GetStdHandle(STD_OUTPUT_HANDLE);
 
 void putComma();
 void Date();
@@ -168,6 +197,8 @@ int choice;
 return 0;
 }
 
+//Detects the pincode.txt in the USB and scan if it's empty or registered.
+//asks the user if they want to register
 void ATM:: insertCard(){                                //dinede-tect niya kung registered na ang card
 fstream pinFP;                                          //tsaka sinasabi kay user na mag-insert na ng card
 string c;
@@ -179,7 +210,7 @@ int ch;
 
     gotoxy(65,40); cout <<"Please insert card...";
     do{                                                 //hanggang di pa na-insert card, sasabihin na i-insert na.
-        pinFP.open("pincode.txt", ios::in);
+        pinFP.open("D:pincode.txt", ios::in);
     } while(!pinFP);
 
     design.loadingBar();
@@ -219,8 +250,10 @@ int ch;
     }
 }
 
+//Shows the user's current balance on screen
 void ATM:: balInquiry(){
 int choice;
+
     system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();
     system("cls"); design.secondBorder(); design.menuScreen(); design.balInquiry();
     type ="Balance Inquiry";
@@ -236,7 +269,7 @@ int choice;
             gotoxy(50,30); cout <<"Account Balance: "<< p->balance;
         }
         else if(choice==2){
-            saveReceipt();
+            gotoxy(60, 43);saveReceipt();
 
         }
         else{gotoxy(50,43); cout <<RED <<"Invalid Transaction: Enter only numbers from 1-2" <<WHITE;}
@@ -245,6 +278,8 @@ int choice;
         askToExit();
 }
 
+//Asks the user of the amount to withdraw and deduct it from the user's current balance
+//Amount should be multiples of 100, should be less than their balance, and must not exceed 20,000
 void ATM:: withdrawal(){
 int temp, ch, i;
 
@@ -286,6 +321,8 @@ int temp, ch, i;
     saveHistory();
 }
 
+//Asks the user to enter amount to deposit and adds it their current balance
+//Amount must be multiples of 100, and must not exceed 50,000
 void ATM:: deposit(){
 int temp, ch, i;
 float thou, fivehun, twohun, onehun;
@@ -360,6 +397,8 @@ float thou, fivehun, twohun, onehun;
     }
 }
 
+//Asks the user to enter the amount to transfer and the recipient.
+//Deducts the amount to their current balance and adds it to the recipient's balance.
 void ATM:: fundTransfer(){
 int temp, ch, i;
 
@@ -438,6 +477,8 @@ int temp, ch, i;
 
 }
 
+//Asks the user to enter their current pin and their new PIN
+//Replaces the old PIN to new PIN and and saves it in the pincode.txt
 void ATM:: changePin(){
 string pinEntered,newPin,reEnterPin;
 int tries=0;
@@ -489,7 +530,8 @@ int tries=0;
     }
 }
 
-
+//Displays all the transaction of the user
+//with its date, transaction type, account number, amount, recipient (if any), and balance
 void ATM::displayHistory(){
 HISTORY *p;
 int i=0, ctr, ch;
@@ -527,6 +569,7 @@ int i=0, ctr, ch;
     gotoxy(60,45);system("pause");
 }
 
+//Asks the user if they want to get receipt of their most recent transaction.
 void ATM:: askReceipt(){
     do{
         system("cls");
@@ -543,6 +586,7 @@ void ATM:: askReceipt(){
        }while(chR!=1 && chR!=2);
 }
 
+//Asks the user if they want to do another transaction or proceed to exit.
 void ATM:: askToExit(){
 int ch;
     do{
@@ -562,9 +606,10 @@ int ch;
     else if(ch==2){removeCard(); exit(0);}
 }
 
+//Prints the most recent transaction info of the user in the receipt.txt
 void ATM:: saveReceipt(){
 fstream receiptFP;
-receiptFP.open("receipt.txt", ios::out);   //out kapag magpi-print sa file
+receiptFP.open("D:receipt.txt", ios::out);   //out kapag magpi-print sa file
 char accNum[8];
 
     if(!receiptFP){
@@ -573,35 +618,32 @@ char accNum[8];
     }
 
     receiptFP <<R"(
-
  __| |________________________________________________| |__
 (__   ________________________________________________   __)
    | |                                                | |
-
                     PUT TO BANK - Manila
                 The  Bank  of  the  Greyhawks
      Ayala Blvd.,San Marcelino St., Ermita, Manila 1000
     ====================================================
     )";
 
-    receiptFP <<"\n\t\t\t" <<dt <<"\n";
-    receiptFP <<"\n\t\t\tTransaction Type:\t\t\t" <<type;
-    receiptFP <<"\n\t\t\tAccount Number:\t\t\t\t" <<p->accNum;
+    receiptFP <<"\n\t" <<dt <<"\n";
+    receiptFP <<"\n\tTransaction Type:\t\t" <<type;
+    receiptFP <<"\n\tAccount Number:\t\t\t" <<p->accNum;
 
     if(option==2 ||option==3 ||option==4 ){
-        receiptFP <<"\n\t\t\tAmount:\t\t\t\t\t\t" <<std::setprecision(2) << std::fixed <<amount <<"\n";
+        receiptFP <<"\n\tAmount:\t\t\t\t" <<std::setprecision(2) << std::fixed <<amount <<"\n";
     }
     if(option==4){
-        receiptFP <<"\t\t\tRecipient's account number:\t\t" <<r->accNum <<"\n";
+        receiptFP <<"\tRecipient's account number:\t" <<r->accNum <<"\n";
     }
 
-    receiptFP <<"\t\t\tAccount Balance:\t\t\t" ;
+    receiptFP <<"\n\tAccount Balance:\t\t" ;
     receiptFP <<std::setprecision(2) << std::fixed <<p->balance <<"\n";
 
 
     receiptFP <<R"(
     ====================================================
-
       Thank you for banking with PUT TO BANK - Manila!
          Visit Us Online: www.puttobank.com or Call
           our Customer Service Line: 111-2445-345
@@ -609,16 +651,14 @@ char accNum[8];
  __| |________________________________________________| |__
 (__   ________________________________________________   __)
    | |                                                | |
-
-
     )";
-
-    cout <<"Check your receipt in receipt.txt.\n";
+    gotoxy(60,47); cout <<"Check your receipt in receipt.txt.\n";
     gotoxy(60,45); system("pause");
 
 receiptFP.close();
 }
 
+//Asks the user to remove their ATM Card until it removed.
 void ATM:: removeCard(){                    //in C   //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
 FILE *pinFP;
      system("cls");
@@ -635,6 +675,10 @@ FILE *pinFP;
     gotoxy(60,47);
 }
 
+//Asks the personal information of the user and saves it in the registration.txt in the USB
+//Does not allow below 18 years old users
+//Asks the 6-digit PIN twice and the initial deposit that must be atleast 1000
+//Displays the registration details of the user to confirm.
 void ATM:: registration(){
 string initialPin;
 int intAccNum;
@@ -710,6 +754,8 @@ char ch;
 
 }
 
+//Scans each digit of the PIN of the user and displays asterisk after each input.
+//Scans if backspaces is entered, and moves the cursor backwards.
 void ATM:: pincode(){                                           //ginagawa niyang asterisk yung PIN
 int index =0;
 char ch;
@@ -744,9 +790,10 @@ char ch;
     }
 }
 
+//Saves the registration info of the user to the registration.txt
 void ATM:: saveRegistration(){
 fstream regFP;
-regFP.open("registration.txt", ios::out);                       //out kapag magpi-print sa file
+regFP.open("D:registration.txt", ios::out);                       //out kapag magpi-print sa file
 
     if(!regFP){
         cout <<"registration.txt do not exist!\n";;
@@ -759,19 +806,20 @@ regFP.open("registration.txt", ios::out);                       //out kapag magp
     regFP.close();
 }
 
+//Saves the pincode and the account number of the user for easy access.
 void ATM:: savePincode(){
 fstream pinFP;
-pinFP.open("pincode.txt", ios::out);
+pinFP.open("D:pincode.txt", ios::out);
 
     pinFP <<pin <<"\n";
     pinFP <<accNum;
     pinFP.close();
-
 }
 
+//Retrieves the pincode and account number from the pincode.txt to use for the transacions to be made.
 void ATM:: retrievePincode(){
 fstream pinFP;
-pinFP.open("pincode.txt", ios::in);                             //in kapag mag retrieve from file
+pinFP.open("D:pincode.txt", ios::in);
 
     if(!pinFP){
         cout <<"pincode.txt do not exist!\n";;
@@ -786,7 +834,8 @@ pinFP.open("pincode.txt", ios::in);                             //in kapag mag r
 pinFP.close();
 }
 
-void ATM:: findAccount(){                                       //hinahanap yung account info ng current user.
+//Scans the All acocunts linked list and finds the node of the current user using its account number
+void ATM:: findAccount(){
 
     p=head;
 
@@ -795,7 +844,8 @@ void ATM:: findAccount(){                                       //hinahanap yung
     }
 }
 
-void ATM:: findRecipient(){                                     //hinahanap yung account info ng recipient
+//Scans the All acocunts linked list and finds the node of the recipient using its account number
+void ATM:: findRecipient(){
 
     r=head;
 
@@ -804,7 +854,8 @@ void ATM:: findRecipient(){                                     //hinahanap yung
     }
 }
 
-void ATM::saveAllAccounts(){                                    //pini-print sa text file ang lahat ng accounts
+//Saves the all accounts linked list in the allAccounts.txt
+void ATM::saveAllAccounts(){
 fstream allAccFP;
 allAccFP.open("allAccounts.txt", ios::out);
 
@@ -826,7 +877,9 @@ ALLACC *p;
     allAccFP.close();
 }
 
-void ATM::retrieveAllAccounts(){                                //kukunin yung mga accounts mula sa allAccounts.txt at isasalin sa linkedlist
+//Retrieves all accounts linked list from allAccounts.txt
+//by storing each data in a variable and add it in the linked list
+void ATM::retrieveAllAccounts(){
 fstream allAccFP;
 allAccFP.open("allAccounts.txt", ios::in);
 
@@ -851,6 +904,7 @@ allAccFP.open("allAccounts.txt", ios::in);
     allAccFP.close();
 }
 
+//Adds the newly registered account to the head of the all accounts linkedlist
 void ATM:: addAccount(){                                        //sine-save yung new account sa linkedlist
 
     n= new ALLACC;                                              //allocates memory to n
@@ -859,6 +913,8 @@ void ATM:: addAccount(){                                        //sine-save yung
     head=n;                                                     //value ng n ay ilagay sa head
 }
 
+//Adds the currently retrieved account at the end of the all accounts linked list
+//To keep the list in chronological order (based from the time they registered)
 void ATM:: addRetrieve(){                                       //sine-save yung lahat ng accounts mulsa sa file sa LinkedList
 ALLACC *q, *p, *n;
 
@@ -876,10 +932,10 @@ ALLACC *q, *p, *n;
     else{q->nxt=n;}
 
     n->nxt=p;
-
 }
 
-void ATM:: addHistory(){                                            //sine-save yung recent transaction sa history linkedlist
+//Adds the most recent transaction history at the head of the transaction history linked list
+void ATM:: addHistory(){
 HISTORY *n;
 
     n= new HISTORY;
@@ -891,6 +947,8 @@ HISTORY *n;
 
 }
 
+//Adds the currently retrieved transaction history at the end of the transaction history linked list
+//To keep the list in chronological order (based from the transaction time and date)
 void ATM:: addRetrievedHistory(){                                   //sine-save yung lahat ng accounts mulsa sa file sa LinkedList
 HISTORY *q, *p, *n;
 
@@ -913,9 +971,10 @@ HISTORY *q, *p, *n;
 
 }
 
-void ATM::saveHistory(){                                            //pini-print sa text file ang lahat ng accounts
+//Saves all transaction history of the current user in the history.txt in the USB
+void ATM::saveHistory(){
 fstream historyFP;
-historyFP.open("history.txt", ios::out);
+historyFP.open("D:history.txt", ios::out);
 
 HISTORY *p;
 
@@ -934,9 +993,11 @@ HISTORY *p;
     historyFP.close();
 }
 
-void ATM::retrieveHistory(){                                        //kukunin yung mga history mula sa history.txt at isasalin sa linkedlist
+//Retrieves transaction history linked list from history.txt
+//by storing each data in a variable and add it in the linked list
+void ATM::retrieveHistory(){
 fstream historyFP;
-historyFP.open("history.txt", ios::in);
+historyFP.open("D:history.txt", ios::in);
 
     if(!historyFP){
         cout<< "File error!\n";
@@ -965,6 +1026,8 @@ historyFP.open("history.txt", ios::in);
     historyFP.close();
 }
 
+//Adds a certain value to each digit of the PIN beofre saving in the pincode.txt
+//The ATM encrypts pincode to secure the user's account
 void ATM:: encrypt(){
 
 int i=0;
@@ -975,6 +1038,7 @@ int i=0;
     }
 }
 
+//Deducts the added value from each digit of the PIN before comparing to the user's entered PIN
 void ATM:: decrypt(){                                       //from random symbol, papalabasin pin code para ma-check kung match inenter.
 int i=0;
 
@@ -984,6 +1048,8 @@ int i=0;
     }
 }
 
+//Asks the user to enter PIN until it is match with their actual PIN
+//After 3 incorrect tries, it blocks the account and exits the program
 void ATM:: askPin(){
 int tries=0;
 string enteredPin;
@@ -1012,11 +1078,13 @@ string enteredPin;
     }
 }
 
+//assigns null to the head of the all accounts and history linked list
 void ATM::makeNull(){
     head=NULL;
     headH=NULL;
 }
 
+//Displays the available transactions ask the user for its preference.
 int ATM:: menu(){
 
     system("cls");
@@ -1040,7 +1108,9 @@ int ATM:: menu(){
     }
 }
 
-void Date() // 24 hr format
+//Creates a time and date in 12 hr format
+//This function is being called to create date for each transaction
+void Date() //12 hr format
 {
     time_t ttime = time(0); // currrent time
 
@@ -1049,12 +1119,14 @@ void Date() // 24 hr format
     dt=dateTime;
 }
 
+//Adds comma in amounts
 void putComma(){
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
     cout << std::setprecision(2) << std::fixed;
 }
 
+//Sets a fixed window size
 HWND WINAPI GetConsoleWindowNT(void)
 {
     //declare function pointer type
@@ -1075,7 +1147,7 @@ HWND WINAPI GetConsoleWindowNT(void)
     return GetConsoleWindow();
 }
 
-
+//Sets a fixed font size
 void setFontStyle(int FontSize){
     CONSOLE_FONT_INFOEX cfi;
     cfi.cbSize = sizeof(cfi);
@@ -1088,7 +1160,7 @@ void setFontStyle(int FontSize){
     SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
 }
 
-
+//Sets the fixed place of displays
 void gotoxy(int x,int y){
     COORD coord = {0,0};
     coord.X=x;
