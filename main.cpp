@@ -311,7 +311,7 @@ int temp, ch, i;
     system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();    //for all loadings
     askReceipt();
 
-    removeCard();                                       //take ATM
+                                                        //take ATM
     gotoxy(60,38); cout <<"Please take your cash.";     //take cash
 
     Date();
@@ -319,6 +319,7 @@ int temp, ch, i;
     saveAllAccounts();
     addHistory();
     saveHistory();
+    removeCard();
 }
 
 //Asks the user to enter amount to deposit and adds it their current balance
@@ -659,7 +660,7 @@ receiptFP.close();
 }
 
 //Asks the user to remove their ATM Card until it removed.
-void ATM:: removeCard(){                    //in C   //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
+/*void ATM:: removeCard(){                    //in C   //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
 FILE *pinFP;
      system("cls");
      design.secondBorder();design.homeTitle();design.usb();
@@ -673,6 +674,20 @@ FILE *pinFP;
     gotoxy(63,40);cout <<"Thank you for banking with us!";
     gotoxy(60,45);system("pause");
     gotoxy(60,47);
+}*/
+
+void ATM:: removeCard(){             //hanggang di pa tinatanggal card, sasabihin na tanggalin na.
+FILE *pinFP;
+
+    do{ system("cls");
+        design.secondBorder();design.homeTitle();design.usb();
+        gotoxy(67,36); cout <<"Please remove card...";
+        pinFP=fopen("D:\pincode.txt","r");
+    } while(pinFP!=NULL);
+    fclose(pinFP);
+    design.loadingBar();
+    gotoxy(63,40);cout <<"Thank you for banking with us!";
+    gotoxy(60,45);system("pause");
 }
 
 //Asks the personal information of the user and saves it in the registration.txt in the USB
