@@ -82,7 +82,7 @@ public:
     int menu();
 };
 
-class comma_numpunct : public std::numpunct<char>   //para sa paglalagay ng comma sa balance
+class comma_numpunct : public std::numpunct<char>      //para sa paglalagay ng comma sa balance
 {
   protected:
     virtual char do_thousands_sep() const
@@ -96,7 +96,7 @@ void setFontStyle(int FontSize);
 void gotoxy(int x,int y);
 HWND WINAPI GetConsoleWindowNT(void);
 design design;
-HANDLE m= GetStdHandle(STD_OUTPUT_HANDLE);  //m ang pag-change color sa main
+HANDLE m= GetStdHandle(STD_OUTPUT_HANDLE);           //m ang pag-change color sa main
 
 
 void putComma();
@@ -112,10 +112,10 @@ int choice;
     MoveWindow(hWnd,900,900,1200,900,TRUE);
     setFontStyle(13);
 
-    ATM atm;                                            //creates an object for design class
+    ATM atm;                                        //creates an object for design class
     atm.makeNull();
     atm.retrieveAllAccounts();
-    putComma();                                                 //adds comma and decimal to money displays
+    putComma();                                     //adds comma and decimal to money displays
     atm.insertCard();
     atm.findAccount();
     atm.retrieveHistory();
@@ -151,11 +151,9 @@ int choice;
                     case 1:
                         system("cls");
                         atm.askPin(); system("cls");
-                        design.secondBorder(); design.history();
                         atm.displayHistory(); break;
                     case 2:
                         system("cls");
-                        design.secondBorder(); design.changePin();design.menuScreen();
                         atm.changePin(); break;
                     default: gotoxy(51,44);cout <<"Invalid Transaction: Enter only numbers from 1-2\n"; gotoxy(60,45);system("pause");
                 }
@@ -170,8 +168,8 @@ int choice;
 return 0;
 }
 
-void ATM:: insertCard(){                        //dinede-tect niya kung registered na ang card
-fstream pinFP;                                  //tsaka sinasabi kay user na mag-insert na ng card
+void ATM:: insertCard(){                                //dinede-tect niya kung registered na ang card
+fstream pinFP;                                          //tsaka sinasabi kay user na mag-insert na ng card
 string c;
 int ch;
 
@@ -180,13 +178,13 @@ int ch;
     design.usb();
 
     gotoxy(65,40); cout <<"Please insert card...";
-    do{                                         //hanggang di pa na-insert card, sasabihin na i-insert na.
+    do{                                                 //hanggang di pa na-insert card, sasabihin na i-insert na.
         pinFP.open("pincode.txt", ios::in);
     } while(!pinFP);
 
     design.loadingBar();
-    getline(pinFP, c);                          //kukuha ng strring from fp
-    if(c.empty()){                              //empty()- iche-check kung ang string ay empty. 1- true 0-false
+    getline(pinFP, c);                                  //kukuha ng strring from fp
+    if(c.empty()){                                      //empty()- iche-check kung ang string ay empty. 1- true 0-false
         system("cls");
         design.secondBorder();
         design.homeTitle();
@@ -200,7 +198,7 @@ int ch;
         gotoxy(97,32);cout <<RED"(2) EXIT";
         gotoxy(59,36);cout <<RED"Enter your choice: ";
         cin >> ch;
-        if(ch==1){gotoxy(39,41);system(RESET"pause");                //Kapag walang laman or di pa registered
+        if(ch==1){gotoxy(39,41);system(RESET"pause");      //Kapag walang laman or di pa registered
             registration();
             saveRegistration();
             encrypt();
@@ -217,7 +215,7 @@ int ch;
         }
     }
     else{                                        //kung may laman na or registered na card
-        retrievePincode();                      //para before tawagin si findAccount, refreshed ang accNum.
+        retrievePincode();                       //para before tawagin si findAccount, refreshed ang accNum.
     }
 }
 
@@ -239,7 +237,7 @@ int choice;
         }
         else if(choice==2){
             saveReceipt();
-                                                    //bukas receipt.txt
+
         }
         else{gotoxy(50,43); cout <<RED <<"Invalid Transaction: Enter only numbers from 1-2" <<WHITE;}
         gotoxy(60,45); system("pause");
@@ -272,17 +270,17 @@ int temp, ch, i;
     }
     system("cls"); askPin(); system("cls");
 
-    p->balance-= amount;            //ima-iminus yung amount sa balance
+    p->balance-= amount;                                //ima-iminus yung amount sa balance
     recipient="N/A";
 
     system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();    //for all loadings
     askReceipt();
 
-    removeCard();                           //take ATM
-    gotoxy(60,38); cout <<"Please take your cash.";    //take cash
+    removeCard();                                       //take ATM
+    gotoxy(60,38); cout <<"Please take your cash.";     //take cash
 
     Date();
-    if(chR==1){gotoxy(60,40); saveReceipt();}               //take receipt
+    if(chR==1){gotoxy(60,40); saveReceipt();}           //take receipt
     saveAllAccounts();
     addHistory();
     saveHistory();
@@ -342,7 +340,7 @@ float thou, fivehun, twohun, onehun;
         system("cls");
         design.secondBorder(); design.deposit();design.menuScreen();
         gotoxy(45,27);cout <<"Amount of " << amount <<" will be deposited to your account." <<endl;gotoxy(60,45);system("pause");
-        p->balance+= amount;                                //ipa-plus yung amount sa balance
+        p->balance+= amount;                                               //ipa-plus yung amount sa balance
         recipient="N/A";
         askReceipt();
 
@@ -444,6 +442,9 @@ void ATM:: changePin(){
 string pinEntered,newPin,reEnterPin;
 int tries=0;
 
+    system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();
+    design.secondBorder(); design.changePin();design.menuScreen();
+
     while(pinEntered!=pin && tries<3){                          //hanggat di equal ang pinentered sa pin di pa less than 3 tries
             system("cls");
             design.secondBorder(); design.changePin();design.menuScreen();
@@ -454,9 +455,9 @@ int tries=0;
             retrievePincode();
             decrypt();
             if(pinEntered!=pin){
-                 gotoxy(65,31);cout<<RED"Incorrect PIN!";
+                 gotoxy(65,31);cout<<RED"Incorrect PIN!" <<WHITE;
                  tries++;
-                 gotoxy(60,45);system("pause");                               //madadagdagan ang number of tries
+                 gotoxy(60,45);system("pause");                 //madadagdagan ang number of tries
             }
             if(tries==3){                                       //kapag na-block na
             system("cls");
@@ -470,13 +471,13 @@ int tries=0;
     do{
         system("cls");
         design.secondBorder(); design.changePin();design.menuScreen();                                 //gagawin ito hanggat hindi equal yung newPin at reEnterPin
-        gotoxy(53,27);cout<<"Enter your new 6-digit PIN: ";       // enter new pin
+        gotoxy(53,27);cout<<"Enter your new 6-digit PIN: ";         // enter new pin
         pincode();
-        newPin=pin;                                     //inistore yung pin sa variable newPin
+        newPin=pin;                                                 //inistore yung pin sa variable newPin
 
         gotoxy(53,29);cout<<"Re-enter new 6-digit PIN: ";           //re- enter pin
         pincode();
-        reEnterPin=pin;                                 //inistore yung pin sa variable reEnterPin
+        reEnterPin=pin;                                             //inistore yung pin sa variable reEnterPin
     }while(newPin!=reEnterPin);
 
     if(pin==newPin){
@@ -491,21 +492,37 @@ int tries=0;
 
 void ATM::displayHistory(){
 HISTORY *p;
-int i=1;
+int i=0, ctr, ch;
 
-    gotoxy(14,22);cout<<" _________________________________ _________________ ___________________ ___________ ______________ ______________ ";
-    gotoxy(14,23);cout<<"|             DATE                |       TYPE      |   ACCOUNT NUMBER  |   AMOUNT  |   RECIPIENT  |   BALANCE    |";
-    gotoxy(14,24);cout<<"|_________________________________|_________________|___________________|___________|______________|______________|";
+    system("cls"); design.secondBorder(); design.homeTitle(); design.eagle(); design.loadingBar();         //for all loadings
+    system("cls"); design.secondBorder(); design.history();
+    gotoxy(14,22);cout<<" _________________________________ _________________ ___________________ ___________ ______________________________________ ";
+    gotoxy(14,23);cout<<"|             DATE                |       TYPE      |   ACCOUNT NUMBER  |   AMOUNT  |       RECIPIENT       |   BALANCE    |";
+    gotoxy(14,24);cout<<"|_________________________________|_________________|___________________|___________|_______________________|______________|";
     p=headH;
     while(p!=NULL){
-        gotoxy(15,24+i);cout <<p->dateTime;
-        gotoxy(50,24+i);cout<<p->type;
-        gotoxy(72,24+i);cout<<p->accNum;
-        gotoxy(90,24+i);cout<<p->amount;
-        gotoxy(102,24+i);cout<<p->recipient;
-        gotoxy(117,24+i);cout<<p->balance;
-        i++;
+        gotoxy(15,26+i);cout <<p->dateTime;
+        gotoxy(50,26+i);cout<<p->type;
+        gotoxy(72,26+i);cout<<p->accNum;
+        gotoxy(90,26+i);cout<<p->amount;
+        gotoxy(102,26+i);cout<<p->recipient;
+        gotoxy(125,26+i);cout<<p->balance;
+        i+=2; ctr++;
         p=p->nxt;
+
+        if((ctr%9)==0){
+            gotoxy(50, 47); cout <<"Enter (1) to continue (2) to go back to menu: ";
+            cin >>ch;
+            if(ch!=1){return;}
+
+            system("cls"); design.secondBorder(); design.history();
+            i=0;
+            gotoxy(14,22);cout<<" _________________________________ _________________ ___________________ ___________ ______________________________________ ";
+            gotoxy(14,23);cout<<"|             DATE                |       TYPE      |   ACCOUNT NUMBER  |   AMOUNT  |       RECIPIENT       |   BALANCE    |";
+            gotoxy(14,24);cout<<"|_________________________________|_________________|___________________|___________|_______________________|______________|";
+        }
+
+
     }
     gotoxy(60,45);system("pause");
 }
@@ -631,7 +648,6 @@ char ch;
     cin.ignore();//gotoxy(57,22);
     gotoxy(47,23);cout <<"Enter your full name (EX: JUAN DELA CRUZ): ";
     getline(cin, regInfo.name);
-    //*Lagay if hindi Uppercase
 
     do{
         gotoxy(47,26);cout <<"Enter your Age: ";
@@ -644,7 +660,6 @@ char ch;
     }while(regInfo.age<18);
 
     gotoxy(47,29);cout <<"Enter your Birthday (EX: MARCH 29, 1999): ";
-    //*Lagay if hindi Uppercase
     cin.ignore();
     getline(cin, regInfo.birthday);
     gotoxy(47,32);cout <<"Enter your Cellphone number: ";
@@ -656,11 +671,12 @@ char ch;
         design.secondBorder(); design.menuScreen(); design.registration();
         gotoxy(53,27);cout <<WHITE"Enter 6-digit PIN: ";
         pincode();                                          //mag-enter ng PIN
-        initialPin=pin;
-        //sinalin si pin sa initialPin na string.
+        initialPin=pin;                                     //sinalin si pin sa initialPin na string.
         gotoxy(53,29);cout <<WHITE"Re-enter 6-digit PIN: ";
         pincode();
-        //*LAGAY NG COMMENT KAPAG DI NAG-MATCH
+        if(initialPin!=pin){
+            gotoxy(53,32);cout <<RED <<"PIN do not match!" WHITE; gotoxy(60,45);system("pause");
+        }
     }
 
     while(amount < 1000){
